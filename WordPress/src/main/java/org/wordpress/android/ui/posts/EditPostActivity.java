@@ -214,7 +214,7 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
 
                 // Create a new post for share intents and QuickPress
                 mPost = new Post(WordPress.getCurrentLocalTableBlogId(), false);
-                mPost.setCategories("[" + SiteSettingsInterface.getDefaultCategory(this) +"]");
+                mPost.setCategories("[" + SiteSettingsInterface.getDefaultCategory(this) + "]");
                 mPost.setPostFormat(SiteSettingsInterface.getDefaultFormat(this));
                 WordPress.wpDB.savePost(mPost);
                 mIsNewPost = true;
@@ -480,7 +480,7 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
                                 shouldShowContextMenu = false;
                             } else {
                                 registerReceiver(mGalleryReceiver,
-                                    new IntentFilter(LegacyEditorFragment.ACTION_MEDIA_GALLERY_TOUCHED));
+                                        new IntentFilter(LegacyEditorFragment.ACTION_MEDIA_GALLERY_TOUCHED));
                                 refreshBlogMedia();
                             }
                             break;
@@ -567,7 +567,8 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
         MediaUploadService mediaUploadService = MediaUploadService.getInstance();
 
         // Disable format bar buttons while a media upload is in progress
-        if ((mediaUploadService != null && mediaUploadService.hasUploads()) || mEditorFragment.isUploadingMedia()) {
+        if ((mediaUploadService != null && mediaUploadService.hasUploads()) || mEditorFragment.isUploadingMedia() ||
+                mEditorFragment.isActionInProgress()) {
             ToastUtils.showToast(this, R.string.editor_toast_uploading_please_wait, Duration.SHORT);
             return false;
         }
@@ -627,7 +628,7 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
                     return;
                 }
 
-                trackSavePostAnalytics();
+                PostUtils.trackSavePostAnalytics(mPost);
 
                 PostUploadService.addPostToUpload(mPost);
                 PostUploadService.setLegacyMode(!mShowNewEditor);
@@ -1012,7 +1013,7 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
             // Not a Jetpack or wpcom blog
             // imageURL = mediaFile.getThumbnailURL(); // do not use fileURL here since downloading picture
             // of big dimensions can result in OOM Exception
-            imageURL = mediaFile.getFileURL() != null ?  mediaFile.getFileURL() : mediaFile.getThumbnailURL();
+            imageURL = mediaFile.getFileURL() != null ? mediaFile.getFileURL() : mediaFile.getThumbnailURL();
         }
         return imageURL;
     }
@@ -1480,7 +1481,7 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
         }
 
         Blog blog = WordPress.getCurrentBlog();
-        if (!blog.getMaxImageWidth().equals("Original Size")) {
+        if (MediaUtils.getImageWidthSettingFromString(blog.getMaxImageWidth()) != Integer.MAX_VALUE) {
             // If the user has selected a maximum image width for uploads, rescale the image accordingly
             path = ImageUtils.createResizedImageWithMaxWidth(this, path, Integer.parseInt(blog.getMaxImageWidth()));
         }
@@ -1864,7 +1865,7 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
     }
 
     @Override
-    public void onFeaturedImageChanged(int mediaId) {
+    public void onFeaturedImageChanged(long mediaId) {
         mPost.setFeaturedImageId(mediaId);
         mEditPostSettingsFragment.updateFeaturedImage(mediaId);
     }

@@ -21,6 +21,10 @@ import org.wordpress.android.util.PhotonUtils;
 import org.wordpress.android.util.StringUtils;
 
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.regex.Pattern;
 
 /**
  * generates and displays the HTML for post detail content - main purpose is to assign the
@@ -71,10 +75,15 @@ class ReaderPostRenderer {
         new Thread() {
             @Override
             public void run() {
-                resizeImages();
+                final boolean renderAsTiledGallery = shouldRenderAsTiledGallery();
+
+                if (!renderAsTiledGallery) {
+                    resizeImages();
+                }
+
                 resizeIframes();
 
-                final String htmlContent = formatPostContentForWebView(mRenderBuilder.toString());
+                final String htmlContent = formatPostContentForWebView(mRenderBuilder.toString(), renderAsTiledGallery);
                 mRenderBuilder = null;
                 handler.post(new Runnable() {
                     @Override
@@ -86,20 +95,24 @@ class ReaderPostRenderer {
         }.start();
     }
 
+    public boolean shouldRenderAsTiledGallery() {
+        // determine whether a tiled-gallery exists in the content
+        final boolean hasTiledGallery = Pattern.compile("tiled-gallery[\\s\"']").matcher(mRenderBuilder.toString())
+                .find();
+
+        return hasTiledGallery && mResourceVars.isWideDisplay;
+    }
+
     /*
      * scan the content for images and make sure they're correctly sized for the device
      */
-    void resizeImages() {
+    private void resizeImages() {
         ReaderHtmlUtils.HtmlScannerListener imageListener = new ReaderHtmlUtils.HtmlScannerListener() {
             @Override
-            public void onTagFound(String imageTag, String imageUrl, int start, int end) {
+            public void onTagFound(String imageTag, String imageUrl) {
                 if (!imageUrl.contains("wpcom-smileys")) {
                     replaceImageTag(imageTag, imageUrl);
                 }
-            }
-            @Override
-            public void onScanCompleted() {
-                // nop
             }
         };
         ReaderImageScanner scanner = new ReaderImageScanner(mRenderBuilder.toString(), mPost.isPrivate);
@@ -109,15 +122,11 @@ class ReaderPostRenderer {
     /*
      * scan the content for iframes and make sure they're correctly sized for the device
      */
-    void resizeIframes() {
+    private void resizeIframes() {
         ReaderHtmlUtils.HtmlScannerListener iframeListener = new ReaderHtmlUtils.HtmlScannerListener() {
             @Override
-            public void onTagFound(String tag, String src, int start, int end) {
+            public void onTagFound(String tag, String src) {
                 replaceIframeTag(tag, src);
-            }
-            @Override
-            public void onScanCompleted() {
-                // nop
             }
         };
         ReaderIframeScanner scanner = new ReaderIframeScanner(mRenderBuilder.toString());
@@ -180,16 +189,14 @@ class ReaderPostRenderer {
     private String makeImageTag(final String imageUrl, int width, int height, final String imageClass) {
         String newImageUrl = ReaderUtils.getResizedImageUrl(imageUrl, width, height, mPost.isPrivate);
         if (height > 0) {
-            return new StringBuilder("<img class='").append(imageClass).append("'")
-                    .append(" src='").append(newImageUrl).append("'")
-                    .append(" width='").append(pxToDp(width)).append("'")
-                    .append(" height='").append(pxToDp(height)).append("' />")
-                    .toString();
+            return "<img class='" + imageClass + "'" +
+                    " src='" + newImageUrl + "'" +
+                    " width='" + pxToDp(width) + "'" +
+                    " height='" + pxToDp(height) + "' />";
         } else {
-            return new StringBuilder("<img class='").append(imageClass).append("'")
-                    .append( "src='").append(newImageUrl).append("'")
-                    .append(" width='").append(pxToDp(width)).append("' />")
-                    .toString();
+            return "<img class='" + imageClass + "'" +
+                    "src='" + newImageUrl + "'" +
+                    " width='" + pxToDp(width) + "' />";
         }
     }
 
@@ -198,6 +205,7 @@ class ReaderPostRenderer {
         int newHeight;
         if (width > 0 && height > 0) {
             if (height > width) {
+                //noinspection SuspiciousNameCombination
                 newHeight = mResourceVars.fullSizeImageWidthPx;
                 float ratio = ((float) width / (float) height);
                 newWidth = (int) (newHeight * ratio);
@@ -294,11 +302,10 @@ class ReaderPostRenderer {
             newHeight = mResourceVars.videoHeightPx;
         }
 
-        String newTag = new StringBuilder("<iframe src='").append(src).append("'")
-                .append(" frameborder='0' allowfullscreen='true' allowtransparency='true'")
-                .append(" width='").append(pxToDp(newWidth)).append("'")
-                .append(" height='").append(pxToDp(newHeight)).append("' />")
-                .toString();
+        String newTag = "<iframe src='" + src + "'" +
+                " frameborder='0' allowfullscreen='true' allowtransparency='true'" +
+                " width='" + pxToDp(newWidth) + "'" +
+                " height='" + pxToDp(newHeight) + "' />";
 
         int start = mRenderBuilder.indexOf(tag);
         if (start == -1) {
@@ -312,7 +319,11 @@ class ReaderPostRenderer {
     /*
      * returns the full content, including CSS, that will be shown in the WebView for this post
      */
-    private String formatPostContentForWebView(final String content) {
+    private String formatPostContentForWebView(final String content, boolean renderAsTiledGallery) {
+        // unique CSS class assigned to the gallery elements for easy selection
+        final String galleryOnlyClass = "gallery-only-class" + new Random().nextInt(1000);
+
+        @SuppressWarnings("StringBufferReplaceableByString")
         StringBuilder sbHtml = new StringBuilder("<!DOCTYPE html><html><head><meta charset='UTF-8' />");
 
         // title isn't necessary, but it's invalid html5 without one
@@ -327,11 +338,18 @@ class ReaderPostRenderer {
         .append("<style type='text/css'>")
         .append("  body { font-family: Merriweather, serif; font-weight: 400; margin: 0px; padding: 0px;}")
         .append("  body, p, div { max-width: 100% !important; word-wrap: break-word; }")
-        .append("  p, div, li { line-height: 1.6em; font-size: 0.95em; }")
+
+        // set line-height, font-size but not for gallery divs when rendering as tiled gallery as those will be
+        // handled with the .tiled-gallery rules bellow.
+        .append("  p, div" + (renderAsTiledGallery ? ":not(." + galleryOnlyClass + ")" : "") +
+                ", li { line-height: 1.6em; font-size: 0.95em; }")
+
         .append("  h1, h2 { line-height: 1.2em; }")
 
-        // counteract pre-defined height/width styles
-        .append("  p, div, dl, table { width: auto !important; height: auto !important; }")
+        // counteract pre-defined height/width styles, except for the tiled-gallery divs when rendering as tiled gallery
+        // as those will be handled with the .tiled-gallery rules bellow.
+        .append("  p, div" + (renderAsTiledGallery ? ":not(." + galleryOnlyClass + ")" : "") +
+                ", dl, table { width: auto !important; height: auto !important; }")
 
         // make sure long strings don't force the user to scroll horizontally
         .append("  body, p, div, a { word-wrap: break-word; }")
@@ -356,7 +374,7 @@ class ReaderPostRenderer {
         .append("  a { text-decoration: none; color: ").append(mResourceVars.linkColorStr).append("; }")
 
         // make sure images aren't wider than the display, strictly enforced for images without size
-        .append("  img { max-width: 100%; }")
+        .append("  img { max-width: 100%; width: auto; height: auto; }")
         .append("  img.size-none { max-width: 100% !important; height: auto !important; }")
 
         // center large/medium images, provide a small bottom margin, and add a background color
@@ -364,14 +382,81 @@ class ReaderPostRenderer {
         .append("  img.size-full, img.size-large, img.size-medium {")
         .append("     display: block; margin-left: auto; margin-right: auto;")
         .append("     background-color: ").append(mResourceVars.greyExtraLightStr).append(";")
-        .append("     margin-bottom: ").append(mResourceVars.marginSmallPx).append("px; }")
+        .append("     margin-bottom: ").append(mResourceVars.marginSmallPx).append("px; }");
 
-        // set tiled gallery containers to auto height/width
-        .append("  div.gallery-row, div.gallery-group { width: auto !important; height: auto !important; }")
-        .append("  div.tiled-gallery-caption { clear: both; }")
+        if (renderAsTiledGallery) {
+            sbHtml
+            .append("  .tiled-gallery {")
+            .append("    clear:both;")
+            .append("    overflow:hidden;}")
+            .append(".tiled-gallery img {")
+            .append("    margin:2px !important;}")
+            .append(".tiled-gallery .gallery-group {")
+            .append("    float:left;")
+            .append("    position:relative;}")
+            .append(".tiled-gallery .tiled-gallery-item {")
+            .append("    float:left;")
+            .append("    margin:0;")
+            .append("    position:relative;")
+            .append("    width:inherit;}")
+            .append(".tiled-gallery .gallery-row {")
+            .append("    position: relative;")
+            .append("    left: 50%;")
+            .append("    -webkit-transform: translateX(-50%);")
+            .append("    -moz-transform: translateX(-50%);")
+            .append("    transform: translateX(-50%);")
+            .append("    overflow:hidden;}")
+            .append(".tiled-gallery .tiled-gallery-item a {")
+            .append("    background:transparent;")
+            .append("    border:none;")
+            .append("    color:inherit;")
+            .append("    margin:0;")
+            .append("    padding:0;")
+            .append("    text-decoration:none;")
+            .append("    width:auto;}")
+            .append(".tiled-gallery .tiled-gallery-item img,")
+            .append(".tiled-gallery .tiled-gallery-item img:hover {")
+            .append("    background:none;")
+            .append("    border:none;")
+            .append("    box-shadow:none;")
+            .append("    max-width:100%;")
+            .append("    padding:0;")
+            .append("    vertical-align:middle;}")
+            .append(".tiled-gallery-caption {")
+            .append("    background:#eee;")
+            .append("    background:rgba( 255,255,255,0.8 );")
+            .append("    color:#333;")
+            .append("    font-size:13px;")
+            .append("    font-weight:400;")
+            .append("    overflow:hidden;")
+            .append("    padding:10px 0;")
+            .append("    position:absolute;")
+            .append("    bottom:0;")
+            .append("    text-indent:10px;")
+            .append("    text-overflow:ellipsis;")
+            .append("    width:100%;")
+            .append("    white-space:nowrap;}")
+            .append(".tiled-gallery .tiled-gallery-item-small .tiled-gallery-caption {")
+            .append("    font-size:11px;}")
+            .append(".widget-gallery .tiled-gallery-unresized {")
+            .append("    visibility:hidden;")
+            .append("    height:0px;")
+            .append("    overflow:hidden;}")
+            .append(".tiled-gallery .tiled-gallery-item img.grayscale {")
+            .append("    position:absolute;")
+            .append("    left:0;")
+            .append("    top:0;}")
+            .append(".tiled-gallery .tiled-gallery-item img.grayscale:hover {")
+            .append("    opacity:0;}")
+            .append(".tiled-gallery.type-circle .tiled-gallery-item img {")
+            .append("    border-radius:50% !important;}")
+            .append(".tiled-gallery.type-circle .tiled-gallery-caption {")
+            .append("    display:none;")
+            .append("    opacity:0;}");
+        }
 
         // see http://codex.wordpress.org/CSS#WordPress_Generated_Classes
-        .append("  .wp-caption { background-color: ").append(mResourceVars.greyExtraLightStr).append("; }")
+        sbHtml.append("  .wp-caption { background-color: ").append(mResourceVars.greyExtraLightStr).append("; }")
         .append("  .wp-caption img { margin-top: 0px; margin-bottom: 0px; }")
         .append("  .wp-caption .wp-caption-text {")
         .append("       font-size: smaller; line-height: 1.2em; margin: 0px;")
@@ -392,9 +477,21 @@ class ReaderPostRenderer {
         .append("     width: ").append(pxToDp(mResourceVars.videoWidthPx)).append("px !important;")
         .append("     height: ").append(pxToDp(mResourceVars.videoHeightPx)).append("px !important; }")
 
-        .append("</style>")
-        .append("</head><body>")
-        .append(content)
+        .append("</style>");
+
+        // add a custom CSS class to (any) tiled gallery elements to make them easier selectable for various rules
+        final List<String> classAmendRegexes = Arrays.asList(
+                "(tiled-gallery)([\\s\"\'])",
+                "(gallery-row)([\\s\"'])",
+                "(gallery-group)([\\s\"'])",
+                "(tiled-gallery-item)([\\s\"'])");
+        String contentCustomised = content;
+        for (String classToAmend : classAmendRegexes) {
+            contentCustomised = contentCustomised.replaceAll(classToAmend, "$1 " + galleryOnlyClass + "$2");
+        }
+
+        sbHtml.append("</head><body>")
+        .append(contentCustomised)
         .append("</body></html>");
 
         return sbHtml.toString();
@@ -402,6 +499,9 @@ class ReaderPostRenderer {
 
     private ImageSize getImageSize(final String imageTag, final String imageUrl) {
         ImageSize size = getImageSizeFromAttachments(imageUrl);
+        if (size == null && imageTag.contains("data-orig-size=")) {
+            size = getImageOriginalSizeFromAttributes(imageTag);
+        }
         if (size == null && imageUrl.contains("?")) {
             size = getImageSizeFromQueryParams(imageUrl);
         }
@@ -438,6 +538,12 @@ class ReaderPostRenderer {
         }
 
         return null;
+    }
+
+    private ImageSize getImageOriginalSizeFromAttributes(final String imageTag) {
+        return new ImageSize(
+                ReaderHtmlUtils.getOriginalWidthAttrValue(imageTag),
+                ReaderHtmlUtils.getOriginalHeightAttrValue(imageTag));
     }
 
     private ImageSize getImageSizeFromAttributes(final String imageTag) {

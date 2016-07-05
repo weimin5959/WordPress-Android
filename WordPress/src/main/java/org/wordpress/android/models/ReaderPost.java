@@ -39,7 +39,7 @@ public class ReaderPost {
     private String primaryTag;    // most popular tag on this post based on usage in blog
     private String secondaryTag;  // second most popular tag on this post based on usage in blog
 
-    public long timestamp;        // used for sorting
+    public double sortIndex;
     private String published;
 
     private String url;
@@ -61,6 +61,7 @@ public class ReaderPost {
 
     private String attachmentsJson;
     private String discoverJson;
+    private String format;
 
     public long xpostPostId;
     public long xpostBlogId;
@@ -88,6 +89,7 @@ public class ReaderPost {
 
         post.text = JSONUtils.getString(json, "content");
         post.title = JSONUtils.getStringDecoded(json, "title");
+        post.format = JSONUtils.getString(json, "format");
         post.url = JSONUtils.getString(json, "URL");
         post.shortUrl = JSONUtils.getString(json, "short_URL");
         post.setBlogUrl(JSONUtils.getString(json, "site_URL"));
@@ -116,14 +118,15 @@ public class ReaderPost {
         post.blogName = JSONUtils.getStringDecoded(json, "site_name");
         post.published = JSONUtils.getString(json, "date");
 
-        // the date a post was liked is only returned by the read/liked/ endpoint - if this exists,
-        // set it as the timestamp so posts are sorted by the date they were liked rather than the
-        // date they were published (the timestamp is used to sort posts when querying)
-        String likeDate = JSONUtils.getString(json, "date_liked");
-        if (!TextUtils.isEmpty(likeDate)) {
-            post.timestamp = DateTimeUtils.iso8601ToTimestamp(likeDate);
+        // sort index determines how posts are sorted - this is a "score" for search results,
+        // liked date for liked posts, and published date for all others
+        if (json.has("score")) {
+            post.sortIndex = json.optDouble("score");
+        } else if (json.has("date_liked")) {
+            String likeDate = JSONUtils.getString(json, "date_liked");
+            post.sortIndex = DateTimeUtils.iso8601ToTimestamp(likeDate);
         } else {
-            post.timestamp = DateTimeUtils.iso8601ToTimestamp(post.published);
+            post.sortIndex = DateTimeUtils.iso8601ToTimestamp(post.published);
         }
 
         // if the post is untitled, make up a title from the excerpt
@@ -353,6 +356,19 @@ public class ReaderPost {
         this.excerpt = StringUtils.notNullStr(excerpt);
     }
 
+    // https://codex.wordpress.org/Post_Formats
+    public String getFormat() {
+        return StringUtils.notNullStr(format);
+    }
+    public void setFormat(String format) {
+        this.format = StringUtils.notNullStr(format);
+    }
+
+    public boolean isGallery() {
+        return format != null && format.equals("gallery");
+    }
+
+
     public String getUrl() {
         return StringUtils.notNullStr(url);
     }
@@ -451,7 +467,7 @@ public class ReaderPost {
     public void setAttachmentsJson(String json) {
         attachmentsJson = StringUtils.notNullStr(json);
     }
-    boolean hasAttachments() {
+    public boolean hasAttachments() {
         return !TextUtils.isEmpty(attachmentsJson);
     }
 
@@ -538,6 +554,10 @@ public class ReaderPost {
         return xpostBlogId != 0 && xpostPostId != 0;
     }
 
+    /*
+     * returns true if the passed post appears to be the same as this one - used when posts are
+     * retrieved to determine which ones are new/changed/unchanged
+     */
     public boolean isSamePost(ReaderPost post) {
         return post != null
                 && post.blogId == this.blogId
@@ -548,7 +568,10 @@ public class ReaderPost {
                 && post.numReplies == this.numReplies
                 && post.isFollowedByCurrentUser == this.isFollowedByCurrentUser
                 && post.isLikedByCurrentUser == this.isLikedByCurrentUser
-                && post.isCommentsOpen == this.isCommentsOpen;
+                && post.isCommentsOpen == this.isCommentsOpen
+                && post.getTitle().equals(this.getTitle())
+                && post.getExcerpt().equals(this.getExcerpt())
+                && post.getText().equals(this.getText());
     }
 
     public boolean hasIds(ReaderBlogIdPostId ids) {

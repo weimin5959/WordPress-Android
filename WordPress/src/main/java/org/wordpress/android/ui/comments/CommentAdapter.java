@@ -1,11 +1,8 @@
 package org.wordpress.android.ui.comments;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
@@ -24,18 +21,13 @@ import org.wordpress.android.models.CommentStatus;
 import org.wordpress.android.util.AniUtils;
 import org.wordpress.android.util.AppLog;
 import org.wordpress.android.util.DateTimeUtils;
-import org.wordpress.android.util.ImageUtils;
 import org.wordpress.android.util.StringUtils;
 import org.wordpress.android.util.WPHtml;
 import org.wordpress.android.widgets.WPNetworkImageView;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 
-class CommentAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     interface OnDataLoadedListener {
         void onDataLoaded(boolean isEmpty);
     }
@@ -50,6 +42,7 @@ class CommentAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     interface OnCommentPressedListener {
         void onCommentPressed(int position, View view);
+
         void onCommentLongPressed(int position, View view);
     }
 
@@ -57,8 +50,8 @@ class CommentAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final Context mContext;
 
     private final CommentList mComments = new CommentList();
-    private final HashSet<Integer> mSelectedPositions = new HashSet<>();
-    private final List<Long> mModeratingCommentsIds = new ArrayList<>();
+    private final HashSet<Long> mSelectedCommentsId = new HashSet<>();
+    private final HashSet<Long> mModeratingCommentsIds = new HashSet<>();
 
     private final int mStatusColorSpam;
     private final int mStatusColorUnapproved;
@@ -125,11 +118,11 @@ class CommentAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         mLocalBlogId = localBlogId;
 
-        mStatusColorSpam = context.getResources().getColor(R.color.comment_status_spam);
-        mStatusColorUnapproved = context.getResources().getColor(R.color.comment_status_unapproved);
+        mStatusColorSpam = ContextCompat.getColor(context, R.color.comment_status_spam);
+        mStatusColorUnapproved = ContextCompat.getColor(context, R.color.comment_status_unapproved);
 
-        mUnselectedColor = context.getResources().getColor(R.color.white);
-        mSelectedColor = context.getResources().getColor(R.color.translucent_grey_lighten_20);
+        mUnselectedColor = ContextCompat.getColor(context, R.color.white);
+        mSelectedColor = ContextCompat.getColor(context, R.color.translucent_grey_lighten_20);
 
         mStatusTextSpam = context.getResources().getString(R.string.comment_status_spam);
         mStatusTextUnapproved = context.getResources().getString(R.string.comment_status_unapproved);
@@ -181,7 +174,7 @@ class CommentAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         // status is only shown for comments that haven't been approved
         final boolean showStatus;
         switch (comment.getStatusEnum()) {
-            case SPAM :
+            case SPAM:
                 showStatus = true;
                 holder.txtStatus.setText(mStatusTextSpam);
                 holder.txtStatus.setTextColor(mStatusColorSpam);
@@ -191,7 +184,7 @@ class CommentAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 holder.txtStatus.setText(mStatusTextUnapproved);
                 holder.txtStatus.setTextColor(mStatusColorUnapproved);
                 break;
-            default :
+            default:
                 showStatus = false;
                 break;
         }
@@ -224,7 +217,7 @@ class CommentAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         // request to load more comments when we near the end
-        if (mOnLoadMoreListener != null && position >= getItemCount()-1
+        if (mOnLoadMoreListener != null && position >= getItemCount() - 1
                 && position >= CommentsListFragment.COMMENTS_PER_PAGE - 1) {
             mOnLoadMoreListener.onLoadMore();
         }
@@ -248,7 +241,7 @@ class CommentAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return mComments.size();
     }
 
-    boolean isEmpty() {
+    private boolean isEmpty() {
         return getItemCount() == 0;
     }
 
@@ -264,8 +257,8 @@ class CommentAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     void clearSelectedComments() {
-        if (mSelectedPositions.size() > 0) {
-            mSelectedPositions.clear();
+        if (mSelectedCommentsId.size() > 0) {
+            mSelectedCommentsId.clear();
             notifyDataSetChanged();
             if (mOnSelectedChangeListener != null) {
                 mOnSelectedChangeListener.onSelectedItemsChanged();
@@ -274,7 +267,7 @@ class CommentAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     int getSelectedCommentCount() {
-        return mSelectedPositions.size();
+        return mSelectedCommentsId.size();
     }
 
     CommentList getSelectedComments() {
@@ -283,26 +276,33 @@ class CommentAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             return comments;
         }
 
-        for (Integer position: mSelectedPositions) {
-            if (isPositionValid(position))
-                comments.add(mComments.get(position));
+        for (Long commentId : mSelectedCommentsId) {
+            int commentIndex = indexOfCommentId(commentId);
+            if (commentIndex > -1) {
+                comments.add(mComments.get(commentIndex));
+            }
         }
 
         return comments;
     }
 
     private boolean isItemSelected(int position) {
-        return mSelectedPositions.contains(position);
+        Comment comment = getItem(position);
+        return comment != null && mSelectedCommentsId.contains(comment.commentID);
     }
 
     void setItemSelected(int position, boolean isSelected, View view) {
         if (isItemSelected(position) == isSelected) return;
 
+        Comment comment = getItem(position);
+        if (comment == null) return;
+
         if (isSelected) {
-            mSelectedPositions.add(position);
+            mSelectedCommentsId.add(comment.commentID);
         } else {
-            mSelectedPositions.remove(position);
+            mSelectedCommentsId.remove(comment.commentID);
         }
+
 
         notifyItemChanged(position);
 
@@ -376,7 +376,7 @@ class CommentAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * clear all comments
      */
     void clearComments() {
-        if (mComments != null){
+        if (mComments != null) {
             mComments.clear();
             notifyDataSetChanged();
         }
@@ -397,11 +397,12 @@ class CommentAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * AsyncTask to load comments from SQLite
      */
     private boolean mIsLoadTaskRunning = false;
+
     private class LoadCommentsTask extends AsyncTask<Void, Void, Boolean> {
         CommentList tmpComments;
-        CommentStatus mStatusFilter;
+        final CommentStatus mStatusFilter;
 
-        public LoadCommentsTask (CommentStatus statusFilter){
+        public LoadCommentsTask(CommentStatus statusFilter) {
             mStatusFilter = statusFilter;
         }
 
@@ -409,13 +410,15 @@ class CommentAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         protected void onPreExecute() {
             mIsLoadTaskRunning = true;
         }
+
         @Override
         protected void onCancelled() {
             mIsLoadTaskRunning = false;
         }
+
         @Override
         protected Boolean doInBackground(Void... params) {
-            if (mStatusFilter == null){
+            if (mStatusFilter == null) {
                 tmpComments = CommentTable.getCommentsForBlogWithFilter(mLocalBlogId, CommentStatus.UNKNOWN);
             } else {
                 tmpComments = CommentTable.getCommentsForBlogWithFilter(mLocalBlogId, mStatusFilter);
@@ -426,7 +429,7 @@ class CommentAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
 
             // pre-calc transient values so they're cached prior to display
-            for (Comment comment: tmpComments) {
+            for (Comment comment : tmpComments) {
                 comment.getDatePublished();
                 comment.getUnescapedPostTitle();
                 comment.getAvatarForDisplay(mAvatarSz);
@@ -440,6 +443,7 @@ class CommentAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             return true;
         }
+
         @Override
         protected void onPostExecute(Boolean result) {
             if (result) {
@@ -456,4 +460,27 @@ class CommentAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
+    public HashSet<Long> getSelectedCommentsId() {
+        return mSelectedCommentsId;
+    }
+
+
+    public CommentAdapterState getAdapterState() {
+        return new CommentAdapterState(mSelectedCommentsId, mModeratingCommentsIds);
+    }
+
+    public void setInitialState(CommentAdapterState adapterState) {
+        if (adapterState == null) return;
+
+        if (adapterState.hasSelectedComments()) {
+            mSelectedCommentsId.clear();
+            mSelectedCommentsId.addAll(adapterState.getSelectedComments());
+            setEnableSelection(true);
+        }
+
+        if (adapterState.hasModeratingComments()) {
+            mModeratingCommentsIds.clear();
+            mModeratingCommentsIds.addAll(adapterState.getModeratedCommentsId());
+        }
+    }
 }
