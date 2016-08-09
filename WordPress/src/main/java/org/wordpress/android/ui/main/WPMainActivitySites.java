@@ -66,7 +66,7 @@ import de.greenrobot.event.EventBus;
 /**
  * Main activity which hosts sites, reader, me and notifications tabs
  */
-public class WPMainActivity extends AppCompatActivity implements Bucket.Listener<Note> {
+public class WPMainActivitySites extends AppCompatActivity implements Bucket.Listener<Note> {
 
     private WPViewPager mViewPager;
     private WPMainTabLayout mTabLayout;
@@ -105,6 +105,7 @@ public class WPMainActivity extends AppCompatActivity implements Bucket.Listener
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
+            actionBar.setElevation(0);
             actionBar.setTitle(R.string.tabbar_accessibility_label_my_site);
             actionBar.setDisplayShowTitleEnabled(true);
         }
@@ -120,16 +121,16 @@ public class WPMainActivity extends AppCompatActivity implements Bucket.Listener
 
                 switch (menuItemId) {
                     case R.id.bottomBarItemSites:
-                        ActivityLauncher.viewSites(WPMainActivity.this);
+                        ActivityLauncher.viewSites(WPMainActivitySites.this);
                         break;
                     case R.id.bottomBarItemReader:
-                        ActivityLauncher.viewReader(WPMainActivity.this);
+                        ActivityLauncher.viewReader(WPMainActivitySites.this);
                         break;
                     case R.id.bottomBarItemMe:
-                        ActivityLauncher.viewMe(WPMainActivity.this);
+                        ActivityLauncher.viewMe(WPMainActivitySites.this);
                         break;
                     case R.id.bottomBarItemNotifications:
-                        ActivityLauncher.viewNotifications(WPMainActivity.this);
+                        ActivityLauncher.viewNotifications(WPMainActivitySites.this);
                         break;
                 }
             }
@@ -137,7 +138,7 @@ public class WPMainActivity extends AppCompatActivity implements Bucket.Listener
             @Override
             public void onMenuTabReSelected(@IdRes int menuItemId) {
 //                if (menuItemId == R.id.bottomBarItemOne) {
-                // The user reselected item number one, scroll your content to top.
+                    // The user reselected item number one, scroll your content to top.
 //                }
             }
         });

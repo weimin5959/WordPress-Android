@@ -22,6 +22,10 @@ import org.wordpress.android.ui.accounts.SignInActivity;
 import org.wordpress.android.ui.accounts.login.MagicLinkSignInActivity;
 import org.wordpress.android.ui.comments.CommentsActivity;
 import org.wordpress.android.ui.main.SitePickerActivity;
+import org.wordpress.android.ui.main.WPMainActivityMe;
+import org.wordpress.android.ui.main.WPMainActivityNotifications;
+import org.wordpress.android.ui.main.WPMainActivityReader;
+import org.wordpress.android.ui.main.WPMainActivitySites;
 import org.wordpress.android.ui.media.MediaBrowserActivity;
 import org.wordpress.android.ui.media.WordPressMediaUtils;
 import org.wordpress.android.ui.people.PeopleManagementActivity;
@@ -60,6 +64,34 @@ public class ActivityLauncher {
                 R.anim.activity_slide_in_from_left,
                 R.anim.do_nothing);
         ActivityCompat.startActivityForResult(activity, intent, RequestCodes.SITE_PICKER, options.toBundle());
+    }
+
+    public static void viewSites(Activity activity) {
+        Intent intent = new Intent(activity, WPMainActivitySites.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        activity.startActivity(intent);
+        activity.overridePendingTransition(0, 0);
+    }
+
+    public static void viewReader(Activity activity) {
+        Intent intent = new Intent(activity, WPMainActivityReader.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        activity.startActivity(intent);
+        activity.overridePendingTransition(0, 0);
+    }
+
+    public static void viewMe(Activity activity) {
+        Intent intent = new Intent(activity, WPMainActivityMe.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        activity.startActivity(intent);
+        activity.overridePendingTransition(0, 0);
+    }
+
+    public static void viewNotifications(Activity activity) {
+        Intent intent = new Intent(activity, WPMainActivityNotifications.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        activity.startActivity(intent);
+        activity.overridePendingTransition(0, 0);
     }
 
     public static void viewBlogStats(Context context, int blogLocalTableId) {

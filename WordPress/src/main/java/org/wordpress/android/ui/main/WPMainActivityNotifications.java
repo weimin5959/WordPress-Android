@@ -66,7 +66,7 @@ import de.greenrobot.event.EventBus;
 /**
  * Main activity which hosts sites, reader, me and notifications tabs
  */
-public class WPMainActivity extends AppCompatActivity implements Bucket.Listener<Note> {
+public class WPMainActivityNotifications extends AppCompatActivity implements Bucket.Listener<Note> {
 
     private WPViewPager mViewPager;
     private WPMainTabLayout mTabLayout;
@@ -105,7 +105,7 @@ public class WPMainActivity extends AppCompatActivity implements Bucket.Listener
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(R.string.tabbar_accessibility_label_my_site);
+            actionBar.setTitle(R.string.notifications);
             actionBar.setDisplayShowTitleEnabled(true);
         }
 
@@ -120,16 +120,16 @@ public class WPMainActivity extends AppCompatActivity implements Bucket.Listener
 
                 switch (menuItemId) {
                     case R.id.bottomBarItemSites:
-                        ActivityLauncher.viewSites(WPMainActivity.this);
+                        ActivityLauncher.viewSites(WPMainActivityNotifications.this);
                         break;
                     case R.id.bottomBarItemReader:
-                        ActivityLauncher.viewReader(WPMainActivity.this);
+                        ActivityLauncher.viewReader(WPMainActivityNotifications.this);
                         break;
                     case R.id.bottomBarItemMe:
-                        ActivityLauncher.viewMe(WPMainActivity.this);
+                        ActivityLauncher.viewMe(WPMainActivityNotifications.this);
                         break;
                     case R.id.bottomBarItemNotifications:
-                        ActivityLauncher.viewNotifications(WPMainActivity.this);
+                        ActivityLauncher.viewNotifications(WPMainActivityNotifications.this);
                         break;
                 }
             }
@@ -137,12 +137,12 @@ public class WPMainActivity extends AppCompatActivity implements Bucket.Listener
             @Override
             public void onMenuTabReSelected(@IdRes int menuItemId) {
 //                if (menuItemId == R.id.bottomBarItemOne) {
-                // The user reselected item number one, scroll your content to top.
+                    // The user reselected item number one, scroll your content to top.
 //                }
             }
         });
         mBottomBar.setItems(R.menu.bottom_bar_main);
-        mBottomBar.selectTabAtPosition(0, false);
+        mBottomBar.selectTabAtPosition(3, false);
         mIsBottomBarSetup = true;
 
         mViewPager = (WPViewPager) findViewById(R.id.viewpager_main);
@@ -194,7 +194,7 @@ public class WPMainActivity extends AppCompatActivity implements Bucket.Listener
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                mTabLayout.setSelectedTabPosition(0);
+                mTabLayout.setSelectedTabPosition(3);
             }
         });
 

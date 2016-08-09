@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/bottomBarItemSites"
+        android:icon="@drawable/main_tab_sites"
+        android:title="@string/tabbar_accessibility_label_my_site" />
+    <item
+        android:id="@+id/bottomBarItemReader"
+        android:icon="@drawable/main_tab_reader"
+        android:title="@string/reader" />
+    <item
+        android:id="@+id/bottomBarItemMe"
+        android:icon="@drawable/main_tab_me"
+        android:title="@string/tabbar_accessibility_label_me" />
+    <item
+        android:id="@+id/bottomBarItemNotifications"
+        android:icon="@drawable/main_tab_notifications"
+        android:title="@string/notifications" />
+</menu>
