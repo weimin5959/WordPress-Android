@@ -141,6 +141,7 @@ public abstract class WPMainActivityBottomBar extends AppCompatActivity implemen
         mBottomBar.noTopOffset();
         mBottomBar.useOnlyStatusBarTopOffset();
         mBottomBar.useFixedMode();
+        mBottomBar.noTabletGoodness();
         mBottomBar.setItems(R.menu.bottom_bar_main);
         mBottomBar.selectTabAtPosition(getBottomBarPosition(), false);
         mIsBottomBarSetup = true;

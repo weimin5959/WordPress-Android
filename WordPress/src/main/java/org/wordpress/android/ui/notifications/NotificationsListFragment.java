@@ -27,6 +27,7 @@ import org.wordpress.android.models.Note;
 import org.wordpress.android.ui.ActivityLauncher;
 import org.wordpress.android.ui.RequestCodes;
 import org.wordpress.android.ui.main.WPMainActivity;
+import org.wordpress.android.ui.main.WPMainActivityBottomBar;
 import org.wordpress.android.ui.notifications.adapters.NotesAdapter;
 import org.wordpress.android.ui.notifications.utils.SimperiumUtils;
 import org.wordpress.android.util.AppLog;
@@ -373,8 +374,8 @@ public class NotificationsListFragment extends Fragment
         if (i == R.id.notifications_filter_unread) {// Create a new post
             ActivityLauncher.addNewBlogPostOrPageForResult(getActivity(), WordPress.getCurrentBlog(), false);
         } else {// Switch to Reader tab
-            if (getActivity() instanceof WPMainActivity) {
-                ((WPMainActivity) getActivity()).setReaderTabActive();
+            if (getActivity() instanceof WPMainActivityBottomBar) {
+                ActivityLauncher.viewReader(getActivity());
             }
         }
     }
