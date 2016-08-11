@@ -75,11 +75,16 @@
         </activity>
 
         <!-- Main tab activity -->
-        <activity android:name=".ui.main.WPMainActivity" />
-        <activity android:name=".ui.main.WPMainActivitySites" />
-        <activity android:name=".ui.main.WPMainActivityReader" />
-        <activity android:name=".ui.main.WPMainActivityMe" />
-        <activity android:name=".ui.main.WPMainActivityNotifications" />
+        <activity android:name=".ui.main.WPMainActivity"
+            android:theme="@style/Calypso.NoActionBar" />
+        <activity android:name=".ui.main.WPMainActivitySites"
+                  android:theme="@style/Calypso.NoActionBar" />
+        <activity android:name=".ui.main.WPMainActivityReader"
+                  android:theme="@style/Calypso.NoActionBar" />
+        <activity android:name=".ui.main.WPMainActivityMe"
+                  android:theme="@style/Calypso.NoActionBar" />
+        <activity android:name=".ui.main.WPMainActivityNotifications"
+                  android:theme="@style/Calypso.NoActionBar" />
 
         <!-- Account activities -->
         <activity

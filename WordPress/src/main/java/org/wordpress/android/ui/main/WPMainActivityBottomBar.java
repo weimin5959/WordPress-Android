@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.IdRes;
 import android.support.annotation.StringRes;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.BottomBarBadge;
 import com.roughike.bottombar.OnMenuTabClickListener;
 import com.simperium.client.Bucket;
 import com.simperium.client.BucketObjectMissingException;
@@ -41,7 +44,6 @@ import org.wordpress.android.ui.posts.PromoDialog;
 import org.wordpress.android.ui.prefs.AppPrefs;
 import org.wordpress.android.ui.prefs.AppSettingsFragment;
 import org.wordpress.android.ui.prefs.SiteSettingsFragment;
-import org.wordpress.android.ui.reader.ReaderPostListFragment;
 import org.wordpress.android.util.AniUtils;
 import org.wordpress.android.util.AppLog;
 import org.wordpress.android.util.AppLog.T;
@@ -53,7 +55,6 @@ import org.wordpress.android.util.NetworkUtils;
 import org.wordpress.android.util.ProfilingUtils;
 import org.wordpress.android.util.StringUtils;
 import org.wordpress.android.util.ToastUtils;
-import org.wordpress.android.widgets.WPViewPager;
 
 import de.greenrobot.event.EventBus;
 
@@ -63,13 +64,11 @@ import de.greenrobot.event.EventBus;
 public abstract class WPMainActivityBottomBar extends AppCompatActivity implements Bucket.Listener<Note> {
     private static final String KEY_FRAGMENT = "KEY_FRAGMENT";
 
-    private WPViewPager mViewPager;
-    private WPMainTabLayout mTabLayout;
-    private WPMainTabAdapter mTabAdapter;
     private TextView mConnectionBar;
     private int  mAppBarElevation;
 
     private BottomBar mBottomBar;
+    private BottomBarBadge mUnreadMessagesBadge;
 
     public static final String ARG_OPENED_FROM_PUSH = "opened_from_push";
 
@@ -92,59 +91,11 @@ public abstract class WPMainActivityBottomBar extends AppCompatActivity implemen
     private boolean mIsBottomBarSetup = false;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         ProfilingUtils.split("WPMainActivity.onCreate");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
-
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle(getScreenTitle());
-            actionBar.setDisplayShowTitleEnabled(true);
-        }
-
-        mBottomBar = BottomBar.attach(this, savedInstanceState);
-        // set the tab listener before the items are set to avoid triggering it on set
-        mBottomBar.setOnMenuTabClickListener(new OnMenuTabClickListener() {
-            @Override
-            public void onMenuTabSelected(@IdRes int menuItemId) {
-                if (!mIsBottomBarSetup) {
-                    return;
-                }
-
-                switch (menuItemId) {
-                    case R.id.bottomBarItemSites:
-                        ActivityLauncher.viewSites(WPMainActivityBottomBar.this);
-                        break;
-                    case R.id.bottomBarItemReader:
-                        ActivityLauncher.viewReader(WPMainActivityBottomBar.this);
-                        break;
-                    case R.id.bottomBarItemMe:
-                        ActivityLauncher.viewMe(WPMainActivityBottomBar.this);
-                        break;
-                    case R.id.bottomBarItemNotifications:
-                        ActivityLauncher.viewNotifications(WPMainActivityBottomBar.this);
-                        break;
-                }
-            }
-
-            @Override
-            public void onMenuTabReSelected(@IdRes int menuItemId) {
-//                if (menuItemId == R.id.bottomBarItemOne) {
-                    // The user reselected item number one, scroll your content to top.
-//                }
-            }
-        });
-        mBottomBar.noResizeGoodness();
-        mBottomBar.noScalingGoodness();
-        mBottomBar.noTopOffset();
-        mBottomBar.useOnlyStatusBarTopOffset();
-        mBottomBar.useFixedMode();
-        mBottomBar.noTabletGoodness();
-        mBottomBar.setItems(R.menu.bottom_bar_main);
-        mBottomBar.selectTabAtPosition(getBottomBarPosition(), false);
-        mIsBottomBarSetup = true;
 
         mConnectionBar = (TextView) findViewById(R.id.connection_bar);
         mConnectionBar.setOnClickListener(new View.OnClickListener() {
@@ -182,11 +133,70 @@ public abstract class WPMainActivityBottomBar extends AppCompatActivity implemen
                 ActivityLauncher.showSignInForResult(this);
             }
         }
+
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                CoordinatorLayout coordinatorLayout = getCoordinatorLayout();
+                if (coordinatorLayout != null) {
+                    mBottomBar = BottomBar.attachShy(coordinatorLayout, findViewById(getContentResourceId()),
+                            savedInstanceState);
+                } else {
+                    mBottomBar = BottomBar.attach(WPMainActivityBottomBar.this, savedInstanceState);
+                }
+                // set the tab listener before the items are set to avoid triggering it on set
+                mBottomBar.setOnMenuTabClickListener(new OnMenuTabClickListener() {
+                    @Override
+                    public void onMenuTabSelected(@IdRes int menuItemId) {
+                        if (!mIsBottomBarSetup) {
+                            return;
+                        }
+
+                        switch (menuItemId) {
+                            case R.id.bottomBarItemSites:
+                                ActivityLauncher.viewSites(WPMainActivityBottomBar.this);
+                                break;
+                            case R.id.bottomBarItemReader:
+                                ActivityLauncher.viewReader(WPMainActivityBottomBar.this);
+                                break;
+                            case R.id.bottomBarItemMe:
+                                ActivityLauncher.viewMe(WPMainActivityBottomBar.this);
+                                break;
+                            case R.id.bottomBarItemNotifications:
+                                new UpdateLastSeenTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                                ActivityLauncher.viewNotifications(WPMainActivityBottomBar.this);
+                                break;
+                        }
+                    }
+
+                    @Override
+                    public void onMenuTabReSelected(@IdRes int menuItemId) {
+                        //The user reselected an item so, maybe scroll your content to top.
+                    }
+                });
+                mBottomBar.noTabletGoodness();
+                mBottomBar.noTopOffset();
+                mBottomBar.noNavBarGoodness();
+                mBottomBar.noScalingGoodness();
+                mBottomBar.noResizeGoodness();
+//                mBottomBar.useFixedMode();
+                mBottomBar.setItems(R.menu.bottom_bar_main);
+                int white = ContextCompat.getColor(WPMainActivityBottomBar.this, R.color.blue_wordpress);
+                mBottomBar.mapColorForTab(0, white);
+                mBottomBar.mapColorForTab(1, white);
+                mBottomBar.mapColorForTab(2, white);
+                mBottomBar.mapColorForTab(3, white);
+                mBottomBar.selectTabAtPosition(getBottomBarPosition(), false);
+                mIsBottomBarSetup = true;
+            }
+        });
     }
 
     protected abstract int getBottomBarPosition();
     protected abstract @StringRes int getScreenTitle();
     protected abstract Fragment newFragmentInstance();
+    protected abstract CoordinatorLayout getCoordinatorLayout();
+    protected abstract @IdRes int getContentResourceId();
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -242,7 +252,7 @@ public abstract class WPMainActivityBottomBar extends AppCompatActivity implemen
             }
         }
 
-        mViewPager.setCurrentItem(WPMainTabAdapter.TAB_NOTIFS);
+        ActivityLauncher.viewNotifications(this);
 
         boolean shouldShowKeyboard = getIntent().getBooleanExtra(NotificationsListFragment.NOTE_INSTANT_REPLY_EXTRA, false);
         if (GCMMessageService.getNotificationsCount() == 1) {
@@ -288,7 +298,13 @@ public abstract class WPMainActivityBottomBar extends AppCompatActivity implemen
         if (SimperiumUtils.getNotesBucket() != null) {
             SimperiumUtils.getNotesBucket().addListener(this);
         }
-//        mTabLayout.checkNoteBadge();
+
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                updateNotesBadge();
+            }
+        });
 
 //        // We need to track the current item on the screen when this activity is resumed.
 //        // Ex: Notifications -> notifications detail -> back to notifications
@@ -301,10 +317,14 @@ public abstract class WPMainActivityBottomBar extends AppCompatActivity implemen
         ProfilingUtils.stop();
     }
 
+    protected Fragment getContentFragment() {
+        return getFragmentManager().findFragmentByTag(KEY_FRAGMENT);
+    }
+
     @Override
     public void onBackPressed() {
         // let the fragment handle the back button if it implements our OnParentBackPressedListener
-        Fragment fragment = getFragmentManager().findFragmentByTag(KEY_FRAGMENT);
+        Fragment fragment = getContentFragment();
         if (fragment instanceof OnActivityBackPressedListener) {
             boolean handled = ((OnActivityBackPressedListener) fragment).onActivityBackPressed();
             if (handled) {
@@ -357,28 +377,6 @@ public abstract class WPMainActivityBottomBar extends AppCompatActivity implemen
 //        }
 //    }
 
-    /*
-     * re-create the fragment adapter so all its fragments are also re-created - used when
-     * user signs in/out so the fragments reflect the active account
-     */
-    private void resetFragments() {
-        AppLog.i(T.MAIN, "main activity > reset fragments");
-
-        // reset the timestamp that determines when followed tags/blogs are updated so they're
-        // updated when the fragment is recreated (necessary after signin/disconnect)
-        ReaderPostListFragment.resetLastUpdateDate();
-
-        // remember the current tab position, then recreate the adapter so new fragments are created
-        int position = mViewPager.getCurrentItem();
-        mTabAdapter = new WPMainTabAdapter(getFragmentManager());
-        mViewPager.setAdapter(mTabAdapter);
-
-        // restore previous position
-        if (mTabAdapter.isValidPosition(position)) {
-            mViewPager.setCurrentItem(position);
-        }
-    }
-
     private void moderateCommentOnActivityResult(Intent data) {
         try {
             if (SimperiumUtils.getNotesBucket() != null) {
@@ -397,15 +395,6 @@ public abstract class WPMainActivityBottomBar extends AppCompatActivity implemen
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case RequestCodes.EDIT_POST:
-            case RequestCodes.CREATE_BLOG:
-                if (resultCode == RESULT_OK) {
-                    MySiteFragment mySiteFragment = getMySiteFragment();
-                    if (mySiteFragment != null) {
-                        mySiteFragment.onActivityResult(requestCode, resultCode, data);
-                    }
-                }
-                break;
             case RequestCodes.ADD_ACCOUNT:
                 if (resultCode == RESULT_OK) {
                     // Register for Cloud messaging
@@ -428,11 +417,6 @@ public abstract class WPMainActivityBottomBar extends AppCompatActivity implemen
                     moderateCommentOnActivityResult(data);
                 }
                 break;
-            case RequestCodes.SITE_PICKER:
-                if (getMySiteFragment() != null) {
-                    getMySiteFragment().onActivityResult(requestCode, resultCode, data);
-                }
-                break;
             case RequestCodes.BLOG_SETTINGS:
                 if (resultCode == SiteSettingsFragment.RESULT_BLOG_REMOVED) {
                     handleBlogRemoved();
@@ -440,7 +424,7 @@ public abstract class WPMainActivityBottomBar extends AppCompatActivity implemen
                 break;
             case RequestCodes.APP_SETTINGS:
                 if (resultCode == AppSettingsFragment.LANGUAGE_CHANGED) {
-                    resetFragments();
+                    // nothing special to do
                 }
                 break;
         }
@@ -448,22 +432,22 @@ public abstract class WPMainActivityBottomBar extends AppCompatActivity implemen
 
     private void startWithNewAccount() {
         startService(new Intent(this, GCMRegistrationIntentService.class));
-        resetFragments();
+//        resetFragments();
     }
 
-    /*
-     * returns the my site fragment from the sites tab
-     */
-    private MySiteFragment getMySiteFragment() {
-        Fragment fragment = mTabAdapter.getFragment(WPMainTabAdapter.TAB_MY_SITE);
-        if (fragment instanceof MySiteFragment) {
-            return (MySiteFragment) fragment;
-        }
-        return null;
-    }
+//    /*
+//     * returns the my site fragment from the sites tab
+//     */
+//    private MySiteFragment getMySiteFragment() {
+//        Fragment fragment = mTabAdapter.getFragment(WPMainTabAdapter.TAB_MY_SITE);
+//        if (fragment instanceof MySiteFragment) {
+//            return (MySiteFragment) fragment;
+//        }
+//        return null;
+//    }
 
     // Updates `last_seen` notifications flag in Simperium and removes tab indicator
-    private class UpdateLastSeenTask extends AsyncTask<Void, Void, Boolean> {
+    protected class UpdateLastSeenTask extends AsyncTask<Void, Void, Boolean> {
         @Override
         protected Boolean doInBackground(Void... voids) {
             return SimperiumUtils.updateLastSeenTime();
@@ -474,7 +458,7 @@ public abstract class WPMainActivityBottomBar extends AppCompatActivity implemen
             if (isFinishing()) return;
 
             if (lastSeenTimeUpdated) {
-                mTabLayout.showNoteBadge(false);
+                hideNotesBadge();
             }
         }
     }
@@ -483,7 +467,7 @@ public abstract class WPMainActivityBottomBar extends AppCompatActivity implemen
 
     @SuppressWarnings("unused")
     public void onEventMainThread(UserSignedOutWordPressCom event) {
-        resetFragments();
+//        resetFragments();
     }
 
     @SuppressWarnings("unused")
@@ -518,7 +502,7 @@ public abstract class WPMainActivityBottomBar extends AppCompatActivity implemen
 
     @SuppressWarnings("unused")
     public void onEventMainThread(NotificationEvents.NotificationsChanged event) {
-        mTabLayout.checkNoteBadge();
+        updateNotesBadge();
     }
 
     @SuppressWarnings("unused")
@@ -543,7 +527,7 @@ public abstract class WPMainActivityBottomBar extends AppCompatActivity implemen
             ActivityLauncher.showSignInForResult(this);
         } else {
             Blog blog = WordPress.getCurrentBlog();
-            MySiteFragment mySiteFragment = getMySiteFragment();
+            MySiteFragment mySiteFragment = null;//getMySiteFragment();
             if (mySiteFragment != null) {
                 mySiteFragment.setBlog(blog);
             }
@@ -566,18 +550,37 @@ public abstract class WPMainActivityBottomBar extends AppCompatActivity implemen
                 public void run() {
                     if (isFinishing()) return;
 
-                    if (isViewingNotificationsTab()) {
-                        new UpdateLastSeenTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                    } else {
-                        mTabLayout.checkNoteBadge();
-                    }
+                    updateNotesBadge();
                 }
             });
         }
     }
 
     private boolean isViewingNotificationsTab() {
-        return mViewPager.getCurrentItem() == WPMainTabAdapter.TAB_NOTIFS;
+        return false;//mViewPager.getCurrentItem() == WPMainTabAdapter.TAB_NOTIFS;
+    }
+
+    protected void updateNotesBadge() {
+        int unreadCount = SimperiumUtils.hasUnreadNotes();
+        if (unreadCount > 0) {
+            if (mUnreadMessagesBadge == null) {
+                mUnreadMessagesBadge = mBottomBar.makeBadgeForTabAt(3, getResources().getColor(R.color.alert_red), 0);
+            }
+            mUnreadMessagesBadge.setText("" + unreadCount);
+            mUnreadMessagesBadge.show();
+        } else {
+            if (mUnreadMessagesBadge != null) {
+                mUnreadMessagesBadge.hide();
+            }
+        }
+    }
+
+    protected void hideNotesBadge() {
+        if (mUnreadMessagesBadge != null) {
+            mUnreadMessagesBadge.hide();
+        } else {
+            // nothing special to do
+        }
     }
 
     @Override

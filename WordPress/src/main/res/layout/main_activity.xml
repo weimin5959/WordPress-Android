@@ -1,41 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/root_view_main"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <org.wordpress.android.ui.main.WPMainTabLayout
-        android:id="@+id/tab_layout"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_height"
-        android:background="@color/tab_background"
-        android:elevation="@dimen/tabs_elevation"
-        app:tabIndicatorColor="@color/tab_indicator"
-        tools:targetApi="LOLLIPOP"
-        android:visibility="gone"/>
-
-    <org.wordpress.android.widgets.WPViewPager
-        android:id="@+id/viewpager_main"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/connection_bar"
-        android:layout_below="@+id/tab_layout" />
 
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </FrameLayout>
+        android:layout_height="match_parent" />
 
     <org.wordpress.android.widgets.WPTextView
         android:id="@+id/connection_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
         android:background="@color/alert_yellow"
         android:gravity="center"
         android:paddingBottom="@dimen/margin_medium"
@@ -46,5 +27,4 @@
         android:textSize="@dimen/text_sz_small"
         android:visibility="gone"
         tools:visibility="visible" />
-
-</RelativeLayout>
+</FrameLayout>

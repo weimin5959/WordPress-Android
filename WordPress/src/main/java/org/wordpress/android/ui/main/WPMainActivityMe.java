@@ -2,6 +2,7 @@ package org.wordpress.android.ui.main;
 
 import android.app.Fragment;
 import android.support.annotation.StringRes;
+import android.support.design.widget.CoordinatorLayout;
 
 import org.wordpress.android.R;
 
@@ -23,5 +24,15 @@ public class WPMainActivityMe extends WPMainActivityBottomBar {
     @Override
     protected Fragment newFragmentInstance() {
         return MeFragment.newInstance();
+    }
+
+    @Override
+    protected CoordinatorLayout getCoordinatorLayout() {
+        return null;
+    }
+
+    @Override
+    protected int getContentResourceId() {
+        return R.id.scroll_view;
     }
 }

@@ -1343,17 +1343,17 @@ public class ReaderPostListFragment extends Fragment
         AniUtils.startAnimation(mNewPostsBar, R.anim.reader_top_bar_in);
         mNewPostsBar.setVisibility(View.VISIBLE);
 
-        // assign the scroll listener to hide the bar when the recycler is scrolled, but don't assign
-        // it right away since the user may be scrolling when the bar appears (which would cause it
-        // to disappear as soon as it's displayed)
-        mRecyclerView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (isAdded() && isNewPostsBarShowing()) {
-                    mRecyclerView.addOnScrollListener(mOnScrollListener);
-                }
-            }
-        }, 1000L);
+//        // assign the scroll listener to hide the bar when the recycler is scrolled, but don't assign
+//        // it right away since the user may be scrolling when the bar appears (which would cause it
+//        // to disappear as soon as it's displayed)
+//        mRecyclerView.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (isAdded() && isNewPostsBarShowing()) {
+//                    mRecyclerView.addOnScrollListener(mOnScrollListener);
+//                }
+//            }
+//        }, 1000L);
 
         // remove the gap marker if it's showing, since it's no longer valid
         getPostAdapter().removeGapMarker();

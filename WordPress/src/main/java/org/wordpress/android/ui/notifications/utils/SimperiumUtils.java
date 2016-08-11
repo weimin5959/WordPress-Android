@@ -133,8 +133,8 @@ public class SimperiumUtils {
     }
 
     // Returns true if we have unread notes with a timestamp greater than last_seen timestamp in the meta bucket
-    public static boolean hasUnreadNotes() {
-        if (getNotesBucket() == null || getMetaBucket() == null) return false;
+    public static int hasUnreadNotes() {
+        if (getNotesBucket() == null || getMetaBucket() == null) return 0;
 
         try {
             BucketObject meta = getMetaBucket().get(META_BUCKET_NAME);
@@ -144,13 +144,13 @@ public class SimperiumUtils {
                 Query<Note> query = new Query<>(getNotesBucket());
                 query.where(Note.Schema.UNREAD_INDEX, Query.ComparisonType.EQUAL_TO, true);
                 query.where(Note.Schema.TIMESTAMP_INDEX, Query.ComparisonType.GREATER_THAN, lastSeenTimestamp);
-                return query.execute().getCount() > 0;
+                return query.execute().getCount();
             }
         } catch (BucketObjectMissingException e) {
-            return false;
+            return 0;
         }
 
-        return false;
+        return 0;
     }
 
     // Updates the 'last_seen' field in the meta bucket with the latest note's timestamp

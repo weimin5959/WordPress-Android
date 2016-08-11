@@ -64,7 +64,7 @@ public class WPMainTabLayout extends TabLayout {
      * unread notifications
      */
     void checkNoteBadge() {
-        showNoteBadge(SimperiumUtils.hasUnreadNotes());
+        showNoteBadge(SimperiumUtils.hasUnreadNotes() > 0);
     }
 
     void showNoteBadge(boolean showBadge) {

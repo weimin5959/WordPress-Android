@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.widget.NestedScrollView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +18,6 @@ import android.view.animation.Interpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 
 import org.wordpress.android.R;
 import org.wordpress.android.WordPress;
@@ -58,8 +59,9 @@ public class MySiteFragment extends Fragment
     public static final int HIDE_WP_ADMIN_DAY = 7;
     public static final String HIDE_WP_ADMIN_GMT_TIME_ZONE = "GMT";
 
+    private CollapsingToolbarLayout mCollapsingToolbar;
+
     private WPNetworkImageView mBlavatarImageView;
-    private WPTextView mBlogTitleTextView;
     private WPTextView mBlogSubtitleTextView;
     private LinearLayout mLookAndFeelHeader;
     private RelativeLayout mThemesContainer;
@@ -70,7 +72,7 @@ public class MySiteFragment extends Fragment
     private RelativeLayout mAdminView;
     private View mFabView;
     private LinearLayout mNoSiteView;
-    private ScrollView mScrollView;
+    private NestedScrollView mScrollView;
     private ImageView mNoSiteDrakeImageView;
     private WPTextView mCurrentPlanNameTextView;
 
@@ -100,7 +102,7 @@ public class MySiteFragment extends Fragment
     public void onPause() {
         super.onPause();
         if (mFabView.getVisibility() == View.VISIBLE) {
-            AniUtils.showFab(mFabView, false);
+//            AniUtils.showFab(mFabView, false);
         }
     }
 
@@ -124,7 +126,7 @@ public class MySiteFragment extends Fragment
                 if (isAdded()
                         && blog != null
                         && (mFabView.getVisibility() != View.VISIBLE || mFabView.getTranslationY() != 0)) {
-                    AniUtils.showFab(mFabView, true);
+//                    AniUtils.showFab(mFabView, true);
                 }
             }
         }, delayMs);
@@ -140,8 +142,9 @@ public class MySiteFragment extends Fragment
         mFabTargetYTranslation = (fabHeight + fabMargin) * 2;
         mBlavatarSz = getResources().getDimensionPixelSize(R.dimen.blavatar_sz_small);
 
+        mCollapsingToolbar = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
+
         mBlavatarImageView = (WPNetworkImageView) rootView.findViewById(R.id.my_site_blavatar);
-        mBlogTitleTextView = (WPTextView) rootView.findViewById(R.id.my_site_title_label);
         mBlogSubtitleTextView = (WPTextView) rootView.findViewById(R.id.my_site_subtitle_label);
         mLookAndFeelHeader = (LinearLayout) rootView.findViewById(R.id.my_site_look_and_feel_header);
         mThemesContainer = (RelativeLayout) rootView.findViewById(R.id.row_themes);
@@ -150,7 +153,7 @@ public class MySiteFragment extends Fragment
         mConfigurationHeader = rootView.findViewById(R.id.row_configuration);
         mSettingsView = rootView.findViewById(R.id.row_settings);
         mAdminView = (RelativeLayout) rootView.findViewById(R.id.row_admin);
-        mScrollView = (ScrollView) rootView.findViewById(R.id.scroll_view);
+        mScrollView = (NestedScrollView) rootView.findViewById(R.id.scroll_view);
         mNoSiteView = (LinearLayout) rootView.findViewById(R.id.no_site_view);
         mNoSiteDrakeImageView = (ImageView) rootView.findViewById(R.id.my_site_no_site_view_drake);
         mFabView = rootView.findViewById(R.id.fab_button);
@@ -373,7 +376,8 @@ public class MySiteFragment extends Fragment
         }
         String blogTitle = TextUtils.isEmpty(blogName) ? homeURL : blogName;
 
-        mBlogTitleTextView.setText(blogTitle);
+        mCollapsingToolbar.setTitle(blogTitle);
+
         mBlogSubtitleTextView.setText(homeURL);
 
         // Hide the Plan item if the Plans feature is not available for this blog
