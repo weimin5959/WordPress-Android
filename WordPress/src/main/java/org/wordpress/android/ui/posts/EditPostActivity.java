@@ -35,6 +35,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.CharacterStyle;
 import android.text.style.SuggestionSpan;
+import android.view.ContextMenu;
 import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -84,6 +85,7 @@ import org.wordpress.android.util.AppLog.T;
 import org.wordpress.android.util.AutolinkUtils;
 import org.wordpress.android.util.CrashlyticsUtils;
 import org.wordpress.android.util.CrashlyticsUtils.ExceptionType;
+import org.wordpress.android.util.DeviceUtils;
 import org.wordpress.android.util.ImageUtils;
 import org.wordpress.android.util.MediaUtils;
 import org.wordpress.android.util.NetworkUtils;
@@ -126,6 +128,11 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
     public static final String STATE_KEY_ORIGINAL_POST = "stateKeyOriginalPost";
     public static final String STATE_KEY_EDITOR_FRAGMENT = "editorFragment";
     public static final String STATE_KEY_DROPPED_MEDIA_URIS = "stateKeyDroppedMediaUri";
+
+    // Context menu positioning
+    private static final int CAPTURE_PHOTO_MENU_POSITION = 0;
+    private static final int CAPTURE_VIDEO_MENU_POSITION = 1;
+    private static final int NATIVE_MEDIA_PICKER_MENU_POSITION = 2;
 
     public static final int MEDIA_PERMISSION_REQUEST_CODE = 1;
     public static final int LOCATION_PERMISSION_REQUEST_CODE = 2;
@@ -588,6 +595,44 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
         return false;
     }
 
+    @Override
+    public void openContextMenu(View view) {
+        if (PermissionUtils.checkAndRequestCameraAndStoragePermissions(this, MEDIA_PERMISSION_REQUEST_CODE)) {
+            super.openContextMenu(view);
+        } else {
+            mMenuView = view;
+        }
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        if (DeviceUtils.getInstance().hasCamera(this)) {
+            menu.add(0, CAPTURE_PHOTO_MENU_POSITION, 0, getResources().getText(R.string.media_add_popup_capture_photo));
+        }
+        if (DeviceUtils.getInstance().hasCamera(this)) {
+            menu.add(0, CAPTURE_VIDEO_MENU_POSITION, 0, getResources().getText(R.string.media_add_popup_capture_video));
+        }
+
+        menu.add(0, NATIVE_MEDIA_PICKER_MENU_POSITION, 0, getResources().getText(R.string.select_from_new_picker));
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case CAPTURE_PHOTO_MENU_POSITION:
+                launchCamera();
+                return true;
+            case CAPTURE_VIDEO_MENU_POSITION:
+                launchVideoCamera();
+                return true;
+            case NATIVE_MEDIA_PICKER_MENU_POSITION:
+                launchMediaSelectIntent();
+                return true;
+            default:
+                return false;
+        }
+    }
+
     private boolean publishPost() {
         if (!NetworkUtils.isNetworkAvailable(this)) {
             ToastUtils.showToast(this, R.string.error_publish_no_network, Duration.SHORT);
@@ -655,6 +700,11 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
             }
         }
         startActivityForResult(intent, RequestCodes.PICK_MEDIA);
+    }
+
+    private void launchVideoCamera() {
+        WordPressMediaUtils.launchVideoCamera(this);
+        AppLockManager.getInstance().setExtendedTimeout();
     }
 
     private void showErrorAndFinish(int errorMessageId) {
@@ -1820,9 +1870,7 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
 
     @Override
     public void onAddMediaClicked() {
-        if (PermissionUtils.checkAndRequestCameraAndStoragePermissions(this, MEDIA_PERMISSION_REQUEST_CODE)) {
-            launchMediaSelectIntent();
-        }
+        // no op
     }
 
     @Override
