@@ -35,7 +35,6 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.CharacterStyle;
 import android.text.style.SuggestionSpan;
-import android.view.ContextMenu;
 import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -43,7 +42,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.URLUtil;
 import android.widget.Toast;
 
 import org.wordpress.android.BuildConfig;
@@ -68,7 +66,6 @@ import org.wordpress.android.models.AccountHelper;
 import org.wordpress.android.models.Blog;
 import org.wordpress.android.models.MediaUploadState;
 import org.wordpress.android.models.Post;
-import org.wordpress.android.models.PostStatus;
 import org.wordpress.android.provider.ProviderConstants;
 import org.wordpress.android.ui.ActivityId;
 import org.wordpress.android.ui.RequestCodes;
@@ -1054,7 +1051,7 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
             Matcher matcher = pattern.matcher(content);
             StringBuffer stringBuffer = new StringBuffer();
             while (matcher.find()) {
-                String path = null;
+                String path;
                 String stringUri = matcher.group(1);
                 Uri uri = Uri.parse(stringUri);
                 if (uri != null && stringUri.contains("content:")) {
@@ -1453,7 +1450,7 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
     }
 
     private boolean addMediaVisualEditor(Uri imageUri) {
-        String path = "";
+        String path;
         if (imageUri.toString().contains("content:")) {
             path = getPathFromContentUri(imageUri);
         } else {
