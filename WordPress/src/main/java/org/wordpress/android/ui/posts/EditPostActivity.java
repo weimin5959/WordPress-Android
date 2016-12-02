@@ -543,46 +543,6 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
         }
     }
 
-    private void trackSavePostAnalytics() {
-        PostStatus status = mPost.getStatusEnum();
-        switch (status) {
-            case PUBLISHED:
-                if (!mPost.isLocalDraft()) {
-                    AnalyticsUtils.trackWithBlogDetails(
-                            AnalyticsTracker.Stat.EDITOR_UPDATED_POST,
-                            WordPress.getBlog(mPost.getLocalTableBlogId())
-                    );
-                } else {
-                    // Analytics for the event EDITOR_PUBLISHED_POST are tracked in PostUploadService
-                }
-                break;
-            case SCHEDULED:
-                if (!mPost.isLocalDraft()) {
-                    AnalyticsUtils.trackWithBlogDetails(
-                            AnalyticsTracker.Stat.EDITOR_UPDATED_POST,
-                            WordPress.getBlog(mPost.getLocalTableBlogId())
-                    );
-                } else {
-                    Map<String, Object> properties = new HashMap<>();
-                    properties.put("word_count", AnalyticsUtils.getWordCount(mPost.getContent()));
-                    AnalyticsUtils.trackWithBlogDetails(
-                            AnalyticsTracker.Stat.EDITOR_SCHEDULED_POST,
-                            WordPress.getBlog(mPost.getLocalTableBlogId()),
-                            properties
-                    );
-                }
-                break;
-            case DRAFT:
-                AnalyticsUtils.trackWithBlogDetails(
-                        AnalyticsTracker.Stat.EDITOR_SAVED_DRAFT,
-                        WordPress.getBlog(mPost.getLocalTableBlogId())
-                );
-                break;
-            default:
-                // No-op
-        }
-    }
-
     // Menu actions
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
