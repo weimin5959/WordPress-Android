@@ -8,7 +8,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import org.wordpress.android.ui.ActivityLauncher;
+import org.wordpress.android.push.GCMMessageService;
 import org.wordpress.passcodelock.AppLockManager;
 import org.wordpress.passcodelock.PasscodePreferenceFragment;
 
@@ -60,6 +60,10 @@ public class AppSettingsActivity extends AppCompatActivity {
             mPasscodePreferenceFragment.setPreferences(togglePref, changePref);
             ((SwitchPreference) togglePref).setChecked(
                     AppLockManager.getInstance().getAppLock().isPasswordLocked());
+
+            //here they've changed the PIN lock settings, so let's rebuild notifications if they have
+            //quick actions
+            GCMMessageService.rebuildAndUpdateNotifsOnSystemBarForRemainingNote(this);
         }
     }
 
@@ -71,11 +75,5 @@ public class AppSettingsActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void finish() {
-        super.finish();
-        ActivityLauncher.slideOutToRight(this);
     }
 }

@@ -4,11 +4,11 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
-import org.wordpress.android.BuildConfig;
 import org.wordpress.android.WordPress;
 import org.wordpress.android.analytics.AnalyticsTracker;
 import org.wordpress.android.analytics.AnalyticsTracker.Stat;
 import org.wordpress.android.models.CommentStatus;
+import org.wordpress.android.models.PeopleListFilter;
 import org.wordpress.android.models.ReaderTag;
 import org.wordpress.android.models.ReaderTagType;
 import org.wordpress.android.ui.ActivityId;
@@ -60,6 +60,15 @@ public class AppPrefs {
 
         // index of the last active status type in Comments activity
         COMMENTS_STATUS_TYPE_INDEX,
+
+        // index of the last active people list filter in People Management activity
+        PEOPLE_LIST_FILTER_INDEX,
+
+        // wpcom ID of the last push notification received
+        PUSH_NOTIFICATIONS_LAST_NOTE_ID,
+
+        // local time of the last push notification received
+        PUSH_NOTIFICATIONS_LAST_NOTE_TIME,
     }
 
     /**
@@ -87,6 +96,12 @@ public class AppPrefs {
 
         // When we need to show the Gravatar Change Promo Tooltip
         GRAVATAR_CHANGE_PROMO_REQUIRED,
+
+        // When we need to show the snackbar indicating how notifications can be navigated through
+        SWIPE_TO_NAVIGATE_NOTIFICATIONS,
+
+        // Same as above but for the reader
+        SWIPE_TO_NAVIGATE_READER,
     }
 
     private static SharedPreferences prefs() {
@@ -236,6 +251,25 @@ public class AppPrefs {
         }
     }
 
+    public static PeopleListFilter getPeopleListFilter() {
+        int idx = getInt(DeletablePrefKey.PEOPLE_LIST_FILTER_INDEX);
+        PeopleListFilter[] values = PeopleListFilter.values();
+        if (values.length < idx) {
+            return values[0];
+        } else {
+            return values[idx];
+        }
+    }
+    public static void setPeopleListFilter(PeopleListFilter peopleListFilter) {
+        if (peopleListFilter != null) {
+            setInt(DeletablePrefKey.PEOPLE_LIST_FILTER_INDEX, peopleListFilter.ordinal());
+        } else {
+            prefs().edit()
+                    .remove(DeletablePrefKey.PEOPLE_LIST_FILTER_INDEX.name())
+                    .apply();
+        }
+    }
+
     // Store the version code of the app. Used to check it the app was upgraded.
     public static int getLastAppVersionCode() {
         return getInt(UndeletablePrefKey.LAST_APP_VERSION_INDEX);
@@ -365,10 +399,6 @@ public class AppPrefs {
         return getInt(DeletablePrefKey.STATS_WIDGET_PROMO_ANALYTICS);
     }
 
-    public static boolean isInAppBillingAvailable() {
-        return BuildConfig.IN_APP_BILLING_AVAILABLE;
-    }
-
     public static void setGlobalPlansFeatures(String jsonOfFeatures) {
         if (jsonOfFeatures != null) {
             setString(UndeletablePrefKey.GLOBAL_PLANS_PLANS_FEATURES, jsonOfFeatures);
@@ -386,4 +416,34 @@ public class AppPrefs {
     public static void setInAppPurchaseRefreshRequired(boolean required) {
         setBoolean(UndeletablePrefKey.IAP_SYNC_REQUIRED, required);
     }
+
+    public static String getLastPushNotificationWpcomNoteId() {
+        return getString(DeletablePrefKey.PUSH_NOTIFICATIONS_LAST_NOTE_ID);
+    }
+    public static void setLastPushNotificationWpcomNoteId(String noteID) {
+        setString(DeletablePrefKey.PUSH_NOTIFICATIONS_LAST_NOTE_ID, noteID);
+    }
+    public static long getLastPushNotificationTime() {
+        return getLong(DeletablePrefKey.PUSH_NOTIFICATIONS_LAST_NOTE_TIME);
+    }
+    public static void setLastPushNotificationTime(long time) {
+        setLong(DeletablePrefKey.PUSH_NOTIFICATIONS_LAST_NOTE_ID, time);
+    }
+
+    public static boolean isNotificationsSwipeToNavigateShown() {
+        return getBoolean(UndeletablePrefKey.SWIPE_TO_NAVIGATE_NOTIFICATIONS, false);
+    }
+
+    public static void setNotificationsSwipeToNavigateShown(boolean alreadyShown) {
+        setBoolean(UndeletablePrefKey.SWIPE_TO_NAVIGATE_NOTIFICATIONS, alreadyShown);
+    }
+
+    public static boolean isReaderSwipeToNavigateShown() {
+        return getBoolean(UndeletablePrefKey.SWIPE_TO_NAVIGATE_READER, false);
+    }
+
+    public static void setReaderSwipeToNavigateShown(boolean alreadyShown) {
+        setBoolean(UndeletablePrefKey.SWIPE_TO_NAVIGATE_READER, alreadyShown);
+    }
+
 }
