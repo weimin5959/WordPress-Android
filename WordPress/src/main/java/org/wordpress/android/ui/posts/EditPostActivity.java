@@ -1555,6 +1555,7 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
                 requestCode == RequestCodes.TAKE_VIDEO))) {
             switch (requestCode) {
                 case RequestCodes.PICK_MEDIA:
+                    // TODO: rethink this part to get selected files from the ContentProvider
                     String uri = data.getDataString();
                     if (resultCode != RESULT_OK || TextUtils.isEmpty(uri)) return;
                     break;
