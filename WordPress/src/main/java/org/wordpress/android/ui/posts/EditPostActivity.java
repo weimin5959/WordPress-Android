@@ -765,6 +765,8 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
         if (mEditPostSettingsFragment != null) {
             mEditPostSettingsFragment.updatePostSettings();
         }
+
+        mPost.setDateLastUpdated(System.currentTimeMillis());
     }
 
     private void savePostAsync(final AfterSavePostListener listener) {
@@ -1401,6 +1403,8 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
         if (!post.isLocalDraft()) {
             post.setLocalChange(true);
         }
+
+        post.setDateLastUpdated(System.currentTimeMillis());
     }
 
     /**
