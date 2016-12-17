@@ -44,6 +44,7 @@ public class ReaderPostActions {
     private static final Random mRandom = new Random();
 
     private static final int NUM_RELATED_POSTS_TO_REQUEST = 2;
+    private static final int NUM_RECOMMENDED_POSTS_TO_REQUEST = 2;
 
     private ReaderPostActions() {
         throw new AssertionError();
@@ -401,6 +402,47 @@ public class ReaderPostActions {
                 }
             }
         }.start();
+    }
 
+    /*
+     * request recommended posts which appear in the user's followed stream
+     */
+    public static void requestRecommendedPosts(int offset, int seed) {
+
+        RestRequest.Listener listener = new RestRequest.Listener() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                handleRecommendedPostsResponse(jsonObject);
+            }
+        };
+        RestRequest.ErrorListener errorListener = new RestRequest.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                AppLog.w(T.READER, "requestRecommendedPosts failed");
+                AppLog.e(T.READER, volleyError);
+            }
+        };
+
+        String path = "/read/recommendations/posts"
+                + "?number=" + NUM_RECOMMENDED_POSTS_TO_REQUEST
+                + "&offset=" + offset
+                + "&seed="   + seed
+                + "&fields=" + ReaderSimplePost.SIMPLE_POST_FIELDS;
+        WordPress.getRestClientUtilsV1_2().get(path, null, null, listener, errorListener);
+    }
+
+    private static void handleRecommendedPostsResponse(final JSONObject jsonObject) {
+        if (jsonObject == null) return;
+
+        new Thread() {
+            @Override
+            public void run() {
+                JSONArray jsonPosts = jsonObject.optJSONArray("posts");
+                if (jsonPosts != null) {
+                    ReaderSimplePostList posts = ReaderSimplePostList.fromJsonPosts(jsonPosts);
+                    EventBus.getDefault().post(new ReaderEvents.RecommendedPostsUpdated(posts));
+                }
+            }
+        }.start();
     }
 }

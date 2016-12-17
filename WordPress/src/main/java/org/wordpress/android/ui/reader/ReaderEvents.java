@@ -150,6 +150,19 @@ public class ReaderEvents {
         }
     }
 
+    public static class RecommendedPostsUpdated {
+        private final ReaderSimplePostList mPosts;
+        public RecommendedPostsUpdated(@NonNull ReaderSimplePostList posts) {
+            mPosts = posts;
+        }
+        public ReaderSimplePostList getPosts() {
+            return mPosts;
+        }
+        public boolean hasPosts() {
+            return mPosts != null && mPosts.size() > 0;
+        }
+    }
+
     public static class PostSlugsRequestCompleted {
         private final int mStatusCode;
         private final long mBlogId;
