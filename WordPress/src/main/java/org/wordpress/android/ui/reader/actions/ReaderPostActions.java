@@ -363,7 +363,7 @@ public class ReaderPostActions {
         RestRequest.ErrorListener errorListener = new RestRequest.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                AppLog.w(T.READER, "updateRelatedPosts failed");
+                AppLog.w(T.READER, "requestRelatedPosts failed");
                 AppLog.e(T.READER, volleyError);
 
             }

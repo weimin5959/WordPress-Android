@@ -61,6 +61,7 @@ public class ReaderPost {
     public boolean isPrivate;
     public boolean isVideoPress;
     public boolean isJetpack;
+    public boolean isRecommendedPost;   // not stored
 
     private String attachmentsJson;
     private String discoverJson;

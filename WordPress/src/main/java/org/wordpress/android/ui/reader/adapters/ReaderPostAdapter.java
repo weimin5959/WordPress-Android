@@ -34,6 +34,7 @@ import org.wordpress.android.ui.reader.utils.ReaderXPostUtils;
 import org.wordpress.android.ui.reader.views.ReaderFollowButton;
 import org.wordpress.android.ui.reader.views.ReaderGapMarkerView;
 import org.wordpress.android.ui.reader.views.ReaderIconCountView;
+import org.wordpress.android.ui.reader.views.ReaderSimplePostView;
 import org.wordpress.android.ui.reader.views.ReaderSiteHeaderView;
 import org.wordpress.android.ui.reader.views.ReaderTagHeaderView;
 import org.wordpress.android.ui.reader.views.ReaderThumbnailStrip;
@@ -79,9 +80,10 @@ public class ReaderPostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private static final int VIEW_TYPE_POST        = 0;
     private static final int VIEW_TYPE_XPOST       = 1;
-    private static final int VIEW_TYPE_SITE_HEADER = 2;
-    private static final int VIEW_TYPE_TAG_HEADER  = 3;
-    private static final int VIEW_TYPE_GAP_MARKER  = 4;
+    private static final int VIEW_TYPE_REC_POST    = 2;
+    private static final int VIEW_TYPE_SITE_HEADER = 3;
+    private static final int VIEW_TYPE_TAG_HEADER  = 4;
+    private static final int VIEW_TYPE_GAP_MARKER  = 5;
 
     private static final long ITEM_ID_HEADER     = -1L;
     private static final long ITEM_ID_GAP_MARKER = -2L;
@@ -249,6 +251,14 @@ public class ReaderPostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
+    class RecommendedViewHolder extends RecyclerView.ViewHolder {
+        private final ReaderSimplePostView mPostView;
+        public RecommendedViewHolder(View itemView) {
+            super(itemView);
+            mPostView = (ReaderSimplePostView) itemView;
+        }
+    }
+
     @Override
     public int getItemViewType(int position) {
         if (position == 0 && hasSiteHeader()) {
@@ -261,6 +271,8 @@ public class ReaderPostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             return VIEW_TYPE_GAP_MARKER;
         } else if (getItem(position).isXpost()) {
             return VIEW_TYPE_XPOST;
+        } else if (getItem(position).isRecommendedPost) {
+            return VIEW_TYPE_REC_POST;
         } else {
             return VIEW_TYPE_POST;
         }
@@ -283,6 +295,9 @@ public class ReaderPostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 View xpostView = LayoutInflater.from(context).inflate(R.layout.reader_cardview_xpost, parent, false);
                 return new ReaderXPostViewHolder(xpostView);
 
+            case VIEW_TYPE_REC_POST:
+                return new RecommendedViewHolder(new ReaderSimplePostView(context));
+
             default:
                 View postView = LayoutInflater.from(context).inflate(R.layout.reader_cardview_post, parent, false);
                 return new ReaderPostViewHolder(postView);
@@ -293,6 +308,9 @@ public class ReaderPostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ReaderPostViewHolder) {
             renderPost(position, (ReaderPostViewHolder) holder);
+        } else if (holder instanceof RecommendedViewHolder) {
+            RecommendedViewHolder recHolder = (RecommendedViewHolder) holder;
+            //recHolder.mPostView.showPost(simplePost, parent, false, listener);
         } else if (holder instanceof ReaderXPostViewHolder) {
             renderXPost(position, (ReaderXPostViewHolder) holder);
         } else if (holder instanceof SiteHeaderViewHolder) {
