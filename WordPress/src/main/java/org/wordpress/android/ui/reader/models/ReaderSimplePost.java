@@ -1,9 +1,11 @@
 package org.wordpress.android.ui.reader.models;
 
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.wordpress.android.models.ReaderPost;
 import org.wordpress.android.util.AppLog;
 import org.wordpress.android.util.HtmlUtils;
 import org.wordpress.android.util.JSONUtils;
@@ -31,6 +33,22 @@ public class ReaderSimplePost {
        that makes the call much heavier
     */
     public static final String SIMPLE_POST_FIELDS = "ID,site_ID,title,excerpt,site_name,is_following,author,featured_image,featured_media,railcar";
+
+
+    public static ReaderSimplePost fromReaderPost(@NonNull ReaderPost post) {
+        ReaderSimplePost simplePost = new ReaderSimplePost();
+        simplePost.mPostId = post.postId;
+        simplePost.mSiteId = post.blogId;
+        simplePost.mIsFollowing = post.isFollowedByCurrentUser;
+        simplePost.mTitle = post.getTitle();
+        simplePost.mAuthorName = post.getAuthorName();
+        simplePost.mAuthorAvatarUrl = post.getPostAvatar();
+        simplePost.mExcerpt = post.getExcerpt();
+        simplePost.mSiteName = post.getBlogName();
+        simplePost.mFeaturedImageUrl = post.getFeaturedImage();
+        simplePost.mRailcarJson = post.getRailcarJson();
+        return simplePost;
+    }
 
     public static ReaderSimplePost fromJson(JSONObject json) {
         if (json == null) {

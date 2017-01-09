@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.wordpress.android.R;
+import org.wordpress.android.models.ReaderPost;
 import org.wordpress.android.ui.reader.actions.ReaderActions;
 import org.wordpress.android.ui.reader.actions.ReaderBlogActions;
 import org.wordpress.android.ui.reader.models.ReaderSimplePost;
@@ -58,6 +59,13 @@ public class ReaderSimplePostView extends LinearLayout {
         inflate(context, R.layout.reader_simple_post_view, this);
     }
 
+    public void showPost(ReaderPost post,
+                         ViewGroup parent,
+                         boolean isGlobal,
+                         final OnSimplePostClickListener listener) {
+        ReaderSimplePost simplePost = ReaderSimplePost.fromReaderPost(post);
+        showPost(simplePost, parent, isGlobal, listener);
+    }
     public void showPost(ReaderSimplePost simplePost,
                          ViewGroup parent,
                          boolean isGlobal,
