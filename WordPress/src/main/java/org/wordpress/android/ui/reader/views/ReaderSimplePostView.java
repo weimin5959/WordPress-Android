@@ -6,7 +6,6 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -60,14 +59,12 @@ public class ReaderSimplePostView extends LinearLayout {
     }
 
     public void showPost(ReaderPost post,
-                         ViewGroup parent,
                          boolean isGlobal,
                          final OnSimplePostClickListener listener) {
         ReaderSimplePost simplePost = ReaderSimplePost.fromReaderPost(post);
-        showPost(simplePost, parent, isGlobal, listener);
+        showPost(simplePost, isGlobal, listener);
     }
     public void showPost(ReaderSimplePost simplePost,
-                         ViewGroup parent,
                          boolean isGlobal,
                          final OnSimplePostClickListener listener) {
         mSimplePost = simplePost;
@@ -75,10 +72,9 @@ public class ReaderSimplePostView extends LinearLayout {
 
         LayoutInflater inflater = LayoutInflater.from(getContext());
 
-        View postView = inflater.inflate(R.layout.reader_simple_post_view, parent, false);
-        TextView txtTitle = (TextView) postView.findViewById(R.id.text_simple_post_title);
-        TextView txtExcerpt = (TextView) postView.findViewById(R.id.text_simple_post_excerpt);
-        View siteHeader = postView.findViewById(R.id.layout_simple_post_site_header);
+        TextView txtTitle = (TextView) findViewById(R.id.text_simple_post_title);
+        TextView txtExcerpt = (TextView) findViewById(R.id.text_simple_post_excerpt);
+        View siteHeader = findViewById(R.id.layout_simple_post_site_header);
 
         txtTitle.setText(mSimplePost.getTitle());
 
@@ -118,9 +114,9 @@ public class ReaderSimplePostView extends LinearLayout {
             siteHeader.setVisibility(View.GONE);
         }
 
-        showFeaturedImage(postView);
+        showFeaturedImage();
 
-        postView.setOnClickListener(new OnClickListener() {
+        setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (listener != null) {
@@ -130,8 +126,6 @@ public class ReaderSimplePostView extends LinearLayout {
                 }
             }
         });
-
-        parent.addView(postView);
     }
 
     private void toggleFollowStatus(final ReaderFollowButton btnFollow) {
@@ -162,8 +156,8 @@ public class ReaderSimplePostView extends LinearLayout {
         btnFollow.setIsFollowedAnimated(isAskingToFollow);
     }
 
-    private void showFeaturedImage(final View postView) {
-        final WPNetworkImageView imgFeatured = (WPNetworkImageView) postView.findViewById(R.id.image_featured);
+    private void showFeaturedImage() {
+        final WPNetworkImageView imgFeatured = (WPNetworkImageView) findViewById(R.id.image_featured);
 
         // post must have an excerpt in order to show featured image (not enough space otherwise)
         if (!mSimplePost.hasFeaturedImageUrl() || !mSimplePost.hasExcerpt()) {
@@ -174,15 +168,15 @@ public class ReaderSimplePostView extends LinearLayout {
         // featured image has height set to MATCH_PARENT so wait for parent view's layout to complete
         // before loading image so we can set the image height correctly, then tell the imageView
         // to crop the downloaded image to fit the exact width/height of the view
-        postView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                postView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 int featuredImageWidth = DisplayUtils.dpToPx(
                         getContext(),
                         getContext().getResources().getDimensionPixelSize(R.dimen.reader_simple_post_image_width));
                 int cropWidth = featuredImageWidth;
-                int cropHeight = postView.getHeight();
+                int cropHeight = getHeight();
                 String photonUrl = PhotonUtils.getPhotonImageUrl(
                         mSimplePost.getFeaturedImageUrl(), cropWidth, cropHeight);
                 imgFeatured.setImageUrl(
