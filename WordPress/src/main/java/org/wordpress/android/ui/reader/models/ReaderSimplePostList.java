@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.wordpress.android.models.ReaderPost;
+import org.wordpress.android.models.ReaderPostList;
 
 import java.util.ArrayList;
 
@@ -19,6 +21,16 @@ public class ReaderSimplePostList extends ArrayList<ReaderSimplePost> {
                     posts.add(relatedPost);
                 }
             }
+        }
+        return posts;
+    }
+
+    public ReaderPostList toReaderPosts(boolean isRecommendedPosts) {
+        ReaderPostList posts = new ReaderPostList();
+        for (ReaderSimplePost simplePost: this) {
+            ReaderPost post = simplePost.toReaderPost();
+            post.isRecommendedPost = isRecommendedPosts;
+            posts.add(post);
         }
         return posts;
     }

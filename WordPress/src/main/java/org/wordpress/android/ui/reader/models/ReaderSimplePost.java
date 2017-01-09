@@ -50,6 +50,23 @@ public class ReaderSimplePost {
         return simplePost;
     }
 
+    public ReaderPost toReaderPost() {
+        ReaderPost post = new ReaderPost();
+
+        post.postId = this.mPostId;
+        post.blogId = this.mSiteId;
+        post.isFollowedByCurrentUser = this.mIsFollowing;
+        post.setTitle(this.mTitle);
+        post.setAuthorName(this.mAuthorName);
+        post.setPostAvatar(this.mAuthorAvatarUrl);
+        post.setExcerpt(this.mExcerpt);
+        post.setBlogName(this.mSiteName);
+        post.setFeaturedImage(this.mFeaturedImageUrl);
+        post.setRailcarJson(this.mRailcarJson);
+
+        return post;
+    }
+
     public static ReaderSimplePost fromJson(JSONObject json) {
         if (json == null) {
             throw new IllegalArgumentException("ReaderSimplePost requires a non-null JSONObject");

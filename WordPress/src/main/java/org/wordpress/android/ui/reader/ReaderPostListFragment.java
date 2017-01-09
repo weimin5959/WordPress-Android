@@ -365,11 +365,23 @@ public class ReaderPostListFragment extends Fragment
 
     @SuppressWarnings("unused")
     public void onEventMainThread(ReaderEvents.FollowedBlogsChanged event) {
-        // refresh posts if user is viewing "Followed Sites"
+        // refresh posts if user is viewing "Followed Sites" so changes to
+        // followed sites are reflected
         if (getPostListType() == ReaderPostListType.TAG_FOLLOWED
                 && hasCurrentTag()
                 && getCurrentTag().isFollowedSites()) {
             refreshPosts();
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public void onEventMainThread(ReaderEvents.RecommendedPostsUpdated event) {
+        // add recommended posts if user is viewing "Followed Sites"
+        if (getPostListType() == ReaderPostListType.TAG_FOLLOWED
+                && hasCurrentTag()
+                && getCurrentTag().isFollowedSites()
+                && event.hasPosts()) {
+            getPostAdapter().addRecommendedPosts(event.getPosts());
         }
     }
 
