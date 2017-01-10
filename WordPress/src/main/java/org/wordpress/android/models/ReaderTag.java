@@ -155,6 +155,11 @@ public class ReaderTag implements Serializable, FilterCriteria {
         return tagType == ReaderTagType.DEFAULT && getEndpoint().endsWith("/read/following");
     }
 
+    // recommended posts are currently shown only for followed sites
+    public boolean shouldShowRecommendedPosts() {
+        return isFollowedSites();
+    }
+
     public boolean isDiscover() {
         return tagType == ReaderTagType.DEFAULT && getTagSlug().equals(TAG_TITLE_DISCOVER);
     }

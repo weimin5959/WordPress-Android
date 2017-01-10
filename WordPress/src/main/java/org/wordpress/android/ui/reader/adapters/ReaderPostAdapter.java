@@ -348,16 +348,16 @@ public class ReaderPostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     /*
-     * inserts a recommended post every RECOMMENDED_INTERVAL posts - only used for
-     * "Followed Sites" - up to the caller to call notifyDataSetChanged() - returns
-     * True only if recommendations were inserted
+     * inserts a recommended post every RECOMMENDED_INTERVAL posts - up to the caller to
+     * call notifyDataSetChanged() - returns True only if recommendations were inserted
      */
     private boolean interweaveRecommendations() {
-        if (mRecommendedPosts.size() == 0 || !mCurrentTag.isFollowedSites()) {
+        if (mRecommendedPosts.size() == 0 || !mCurrentTag.shouldShowRecommendedPosts()) {
             return false;
         }
 
-        int position = RECOMMENDED_INTERVAL;
+        // TODO: change to RECOMMENDED_INTERVAL;
+        int position = 0;//RECOMMENDED_INTERVAL;
         if (position >= mPosts.size()) {
             return false;
         }

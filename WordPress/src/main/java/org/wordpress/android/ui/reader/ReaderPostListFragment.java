@@ -382,10 +382,9 @@ public class ReaderPostListFragment extends Fragment
 
     @SuppressWarnings("unused")
     public void onEventMainThread(ReaderEvents.RecommendedPostsUpdated event) {
-        // add recommended posts if user is viewing "Followed Sites"
         if (getPostListType() == ReaderPostListType.TAG_FOLLOWED
                 && hasCurrentTag()
-                && getCurrentTag().isFollowedSites()
+                && getCurrentTag().shouldShowRecommendedPosts()
                 && event.hasPosts()) {
             getPostAdapter().addRecommendedPosts(event.getPosts());
         }
@@ -1095,10 +1094,6 @@ public class ReaderPostListFragment extends Fragment
         showLoadingProgress(false);
 
         updateCurrentTagIfTime();
-
-        if (tag.isFollowedSites()) {
-            requestRecommendedPosts();
-        }
     }
 
     /*
@@ -1260,6 +1255,9 @@ public class ReaderPostListFragment extends Fragment
 
     private void updateCurrentTag() {
         updatePostsWithTag(getCurrentTag(), UpdateAction.REQUEST_NEWER);
+        if (getCurrentTag().shouldShowRecommendedPosts()) {
+            requestRecommendedPosts();
+        }
     }
 
     /*
