@@ -44,7 +44,7 @@ public class ReaderPostActions {
     private static final Random mRandom = new Random();
 
     private static final int NUM_RELATED_POSTS_TO_REQUEST = 2;
-    private static final int NUM_RECOMMENDED_POSTS_TO_REQUEST = 2;
+    private static final int NUM_RECOMMENDED_POSTS_TO_REQUEST = 10;
 
     private ReaderPostActions() {
         throw new AssertionError();

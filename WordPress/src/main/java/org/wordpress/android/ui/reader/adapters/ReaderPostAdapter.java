@@ -30,6 +30,7 @@ import org.wordpress.android.ui.reader.actions.ReaderActions;
 import org.wordpress.android.ui.reader.actions.ReaderBlogActions;
 import org.wordpress.android.ui.reader.actions.ReaderPostActions;
 import org.wordpress.android.ui.reader.models.ReaderBlogIdPostId;
+import org.wordpress.android.ui.reader.models.ReaderSimplePost;
 import org.wordpress.android.ui.reader.models.ReaderSimplePostList;
 import org.wordpress.android.ui.reader.utils.ReaderUtils;
 import org.wordpress.android.ui.reader.utils.ReaderXPostUtils;
@@ -69,6 +70,7 @@ public class ReaderPostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private final ReaderTypes.ReaderPostListType mPostListType;
     private final ReaderPostList mPosts = new ReaderPostList();
     private final HashSet<String> mRenderedIds = new HashSet<>();
+    private final ReaderSimplePostList mRecommendedPosts = new ReaderSimplePostList();
 
     private ReaderInterfaces.OnPostSelectedListener mPostSelectedListener;
     private ReaderInterfaces.OnPostPopupListener mOnPostPopupListener;
@@ -79,6 +81,7 @@ public class ReaderPostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     // the large "tbl_posts.text" column is unused here, so skip it when querying
     private static final boolean EXCLUDE_TEXT_COLUMN = true;
     private static final int MAX_ROWS = ReaderConstants.READER_MAX_POSTS_TO_DISPLAY;
+    private static final int RECOMMENDED_INTERVAL = 10;
 
     private static final int VIEW_TYPE_POST        = 0;
     private static final int VIEW_TYPE_XPOST       = 1;
@@ -333,10 +336,41 @@ public class ReaderPostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
+    /*
+     * called after recommended posts are retrieved from the backend
+     */
     public void addRecommendedPosts(@NonNull ReaderSimplePostList simplePosts) {
-        // TODO: for now adding at the top for easier testing, will need to interweave
-        mPosts.addAll(0, simplePosts.toReaderPosts(true));
-        notifyDataSetChanged();
+        mRecommendedPosts.clear();
+        mRecommendedPosts.addAll(simplePosts);
+        if (interweaveRecommendations()) {
+            notifyDataSetChanged();
+        }
+    }
+
+    /*
+     * inserts a recommended post every RECOMMENDED_INTERVAL posts - only used for
+     * "Followed Sites" - up to the caller to call notifyDataSetChanged() - returns
+     * True only if recommendations were inserted
+     */
+    private boolean interweaveRecommendations() {
+        if (mRecommendedPosts.size() == 0 || !mCurrentTag.isFollowedSites()) {
+            return false;
+        }
+
+        int position = RECOMMENDED_INTERVAL;
+        if (position >= mPosts.size()) {
+            return false;
+        }
+
+        for (ReaderSimplePost post: mRecommendedPosts) {
+            mPosts.add(position, post.toReaderPost());
+            position += RECOMMENDED_INTERVAL;
+            if (position >= mPosts.size()) {
+                break;
+            }
+        }
+
+        return true;
     }
 
     private void renderXPost(int position, ReaderXPostViewHolder holder) {
@@ -990,6 +1024,7 @@ public class ReaderPostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (result) {
                 mPosts.clear();
                 mPosts.addAll(allPosts);
+                interweaveRecommendations();
                 notifyDataSetChanged();
             }
 

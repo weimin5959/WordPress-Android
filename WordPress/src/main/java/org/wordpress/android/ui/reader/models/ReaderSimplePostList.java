@@ -25,11 +25,11 @@ public class ReaderSimplePostList extends ArrayList<ReaderSimplePost> {
         return posts;
     }
 
-    public ReaderPostList toReaderPosts(boolean isRecommendedPosts) {
+    public ReaderPostList toReaderPosts(boolean isRecommended) {
         ReaderPostList posts = new ReaderPostList();
         for (ReaderSimplePost simplePost: this) {
             ReaderPost post = simplePost.toReaderPost();
-            post.isRecommendedPost = isRecommendedPosts;
+            post.isRecommendedPost = isRecommended;
             posts.add(post);
         }
         return posts;

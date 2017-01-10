@@ -47,6 +47,7 @@ import org.wordpress.android.ui.reader.ReaderTypes.ReaderPostListType;
 import org.wordpress.android.ui.reader.actions.ReaderActions;
 import org.wordpress.android.ui.reader.actions.ReaderBlogActions;
 import org.wordpress.android.ui.reader.actions.ReaderBlogActions.BlockedBlogResult;
+import org.wordpress.android.ui.reader.actions.ReaderPostActions;
 import org.wordpress.android.ui.reader.adapters.ReaderMenuAdapter;
 import org.wordpress.android.ui.reader.adapters.ReaderPostAdapter;
 import org.wordpress.android.ui.reader.adapters.ReaderSearchSuggestionAdapter;
@@ -372,6 +373,11 @@ public class ReaderPostListFragment extends Fragment
                 && getCurrentTag().isFollowedSites()) {
             refreshPosts();
         }
+    }
+
+    private void requestRecommendedPosts() {
+        AppLog.d(T.READER, "reader post list > requesting recommended posts");
+        ReaderPostActions.requestRecommendedPosts(0, 0);
     }
 
     @SuppressWarnings("unused")
@@ -1089,6 +1095,10 @@ public class ReaderPostListFragment extends Fragment
         showLoadingProgress(false);
 
         updateCurrentTagIfTime();
+
+        if (tag.isFollowedSites()) {
+            requestRecommendedPosts();
+        }
     }
 
     /*
