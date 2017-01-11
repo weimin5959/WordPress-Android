@@ -728,12 +728,11 @@ public class ReaderPost {
     /*
      * converts iso8601 pubDate to a java date for display - this is the date that appears on posts
      */
-    private transient java.util.Date dtDisplay;
     public java.util.Date getDisplayDate() {
-        if (dtDisplay == null) {
-            dtDisplay = DateTimeUtils.dateFromIso8601(this.datePublished);
+        if (this.datePublished != null) {
+            return DateTimeUtils.dateFromIso8601(this.datePublished);
         }
-        return dtDisplay;
+        return null;
     }
 
     /*
