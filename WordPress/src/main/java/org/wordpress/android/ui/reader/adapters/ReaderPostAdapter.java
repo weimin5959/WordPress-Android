@@ -362,8 +362,10 @@ public class ReaderPostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             return false;
         }
 
-        for (ReaderSimplePost post: mRecommendedPosts) {
-            mPosts.add(position, post.toReaderPost());
+        for (ReaderSimplePost simplePost: mRecommendedPosts) {
+            ReaderPost post = simplePost.toReaderPost();
+            post.isRecommendedPost = true;
+            mPosts.add(position, post);
             position += RECOMMENDED_INTERVAL;
             if (position >= mPosts.size()) {
                 break;
