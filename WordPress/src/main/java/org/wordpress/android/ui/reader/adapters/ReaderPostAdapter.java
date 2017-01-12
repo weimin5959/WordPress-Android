@@ -316,7 +316,7 @@ public class ReaderPostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         } else if (holder instanceof RecommendedViewHolder) {
             RecommendedViewHolder recHolder = (RecommendedViewHolder) holder;
             // TODO: add listener
-            recHolder.mPostView.showPost(getItem(position), false, null);
+            recHolder.mPostView.showPost(getItem(position), true, null);
         } else if (holder instanceof ReaderXPostViewHolder) {
             renderXPost(position, (ReaderXPostViewHolder) holder);
         } else if (holder instanceof SiteHeaderViewHolder) {
