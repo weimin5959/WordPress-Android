@@ -157,7 +157,8 @@ public class ReaderTag implements Serializable, FilterCriteria {
 
     // recommended posts are currently shown only for followed sites
     public boolean shouldShowRecommendedPosts() {
-        return isFollowedSites();
+        // TODO: only return true for followed sites
+        return true; //isFollowedSites();
     }
 
     public boolean isDiscover() {

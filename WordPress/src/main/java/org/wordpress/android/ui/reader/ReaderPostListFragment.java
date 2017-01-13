@@ -387,6 +387,9 @@ public class ReaderPostListFragment extends Fragment
                 && getCurrentTag().shouldShowRecommendedPosts()
                 && event.hasPosts()) {
             getPostAdapter().addRecommendedPosts(event.getPosts());
+            AppLog.d(T.READER, "reader post list > adding recommended posts");
+        } else {
+            AppLog.d(T.READER, "reader post list > NOT adding recommended posts");
         }
     }
 

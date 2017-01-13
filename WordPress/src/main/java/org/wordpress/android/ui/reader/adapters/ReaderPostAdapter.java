@@ -315,8 +315,13 @@ public class ReaderPostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             renderPost(position, (ReaderPostViewHolder) holder);
         } else if (holder instanceof RecommendedViewHolder) {
             RecommendedViewHolder recHolder = (RecommendedViewHolder) holder;
-            // TODO: add listener
-            recHolder.mPostView.showPost(getItem(position), true, null);
+            ReaderSimplePostView.OnSimplePostClickListener listener = new ReaderSimplePostView.OnSimplePostClickListener() {
+                @Override
+                public void onSimplePostClick(View v, long siteId, long postId) {
+                    showRecommendedPostDetail(v.getContext(), siteId, postId);
+                }
+            };
+            recHolder.mPostView.showPost(getItem(position), true, listener);
         } else if (holder instanceof ReaderXPostViewHolder) {
             renderXPost(position, (ReaderXPostViewHolder) holder);
         } else if (holder instanceof SiteHeaderViewHolder) {
@@ -373,6 +378,20 @@ public class ReaderPostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
 
         return true;
+    }
+
+    private void showRecommendedPostDetail(Context context, long blogId, long postId) {
+        // TODO: track
+        //AnalyticsUtils.trackWithReaderPostDetails(stat, blogId, postId);
+        ReaderActivityLauncher.showReaderPostDetail(
+                context,
+                false,
+                blogId,
+                postId,
+                null,
+                0,
+                true,
+                null);
     }
 
     private void renderXPost(int position, ReaderXPostViewHolder holder) {
