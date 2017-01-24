@@ -7,6 +7,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -69,11 +70,9 @@ import org.wordpress.android.models.Blog;
 import org.wordpress.android.models.MediaUploadState;
 import org.wordpress.android.models.Post;
 import org.wordpress.android.provider.ProviderConstants;
-import org.wordpress.android.provider.WPDocumentsProvider;
 import org.wordpress.android.ui.ActivityId;
 import org.wordpress.android.ui.RequestCodes;
 import org.wordpress.android.ui.media.MediaGalleryActivity;
-import org.wordpress.android.ui.media.MediaGalleryPickerActivity;
 import org.wordpress.android.ui.media.MediaGridFragment;
 import org.wordpress.android.ui.media.WordPressMediaUtils;
 import org.wordpress.android.ui.media.services.MediaEvents;
@@ -1591,16 +1590,10 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
                     String uri = data.getDataString();
                     if (resultCode == Activity.RESULT_OK) {
                         Uri mediaUri = data.getData();
-                        String authority = mediaUri.getAuthority();
                         // check whether user has chosen media from the WP blog gallery
-                        if (authority.equals(getString(R.string.documents_provider_authority_api19))) {
-                            // TODO handle data for documents provider API 19+
-                            // WPDocumentsProvider.getPath
-                            ToastUtils.showToast(this, R.string.gallery_error, Duration.SHORT);
-                        }
-                        else if (authority.equals(getString(R.string.documents_provider_authority_below_api19))) {
-                            // TODO handle data for documents provider API below 19
-                            ToastUtils.showToast(this, R.string.gallery_error, Duration.SHORT);
+                        if (isWPDocumentProviderAuthority(mediaUri)) {
+                            long mediaItemId = ContentUris.parseId(mediaUri);
+                            addExistingMediaToEditor(String.valueOf(mediaItemId));
                         } else {
                             // if not, let's fetch media from the device providers
                             fetchMedia(Arrays.asList(mediaUri));
@@ -1655,14 +1648,18 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
         }
     }
 
-    private void handleMediaGalleryPickerResult(Intent data) {
-        ArrayList<String> ids = data.getStringArrayListExtra(MediaGalleryPickerActivity.RESULT_IDS);
-        if (ids == null || ids.size() == 0) {
-            return;
+
+    private boolean isWPDocumentProviderAuthority(Uri uri) {
+        if (uri == null) return false;
+
+        String authority = uri.getAuthority();
+        if (!TextUtils.isEmpty(authority)) {
+            return (authority.equals(getString(R.string.documents_provider_authority_api19))
+                    ||
+                    authority.equals(getString(R.string.documents_provider_authority_below_api19)));
         }
 
-        String mediaId = ids.get(0);
-        addExistingMediaToEditor(mediaId);
+        return false;
     }
 
     private void handleMediaGalleryResult(Intent data) {
