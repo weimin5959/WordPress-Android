@@ -378,6 +378,7 @@ public class ReaderPostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             holder.imgFeatured.setImageUrl(
                     post.getFeaturedImageForDisplay(mPhotonWidth, mPhotonHeight),
                     WPNetworkImageView.ImageType.PHOTO);
+            holder.thumbnailStrip.setVisibility(View.GONE);
         } else {
             holder.txtTitle.setVisibility(View.VISIBLE);
             holder.txtTitle.setText(post.getTitle());
@@ -590,7 +591,7 @@ public class ReaderPostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     private boolean hasTagHeader() {
-        return mCurrentTag != null && mCurrentTag.isTagTopic();
+        return mCurrentTag != null && mCurrentTag.isTagTopic() && !isEmpty();
     }
 
     private boolean isDiscover() {
