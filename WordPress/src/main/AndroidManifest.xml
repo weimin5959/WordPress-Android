@@ -72,7 +72,7 @@
         <!-- For use on API 19+ -->
         <provider
             android:name=".provider.WPDocumentsProvider"
-            android:authorities="org.wordpress.android.WPDocumentsProvider"
+            android:authorities="@string/documents_provider_authority_api19"
             android:exported="true"
             android:grantUriPermissions="true"
             android:permission="android.permission.MANAGE_DOCUMENTS"
@@ -85,7 +85,7 @@
         <!-- Legacy API < 19 -->
         <provider
             android:name=".provider.WPContentProvider"
-            android:authorities="org.wordpress.android.WPContentProvider"
+            android:authorities="@string/documents_provider_authority_below_api19"
             android:exported="true"
             android:grantUriPermissions="true"
             android:permission="android.permission.MANAGE_DOCUMENTS"

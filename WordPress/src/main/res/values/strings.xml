@@ -1629,4 +1629,8 @@
         your post in this state. Would you like to remove all failed media?</string>
     <string name="editor_remove_failed_uploads">Remove failed uploads</string>
 
+    <string name="documents_provider_authority_api19">.WPDocumentsProvider</string>
+    <string name="documents_provider_authority_below_api19">.WPContentProvider</string>
+
+
 </resources>

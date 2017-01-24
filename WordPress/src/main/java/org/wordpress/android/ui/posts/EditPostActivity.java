@@ -69,6 +69,7 @@ import org.wordpress.android.models.Blog;
 import org.wordpress.android.models.MediaUploadState;
 import org.wordpress.android.models.Post;
 import org.wordpress.android.provider.ProviderConstants;
+import org.wordpress.android.provider.WPDocumentsProvider;
 import org.wordpress.android.ui.ActivityId;
 import org.wordpress.android.ui.RequestCodes;
 import org.wordpress.android.ui.media.MediaGalleryActivity;
@@ -1588,21 +1589,23 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
                 case RequestCodes.PICK_MEDIA:
                     // TODO: rethink this part to get selected files from the ContentProvider
                     String uri = data.getDataString();
-                    if (resultCode != RESULT_OK || TextUtils.isEmpty(uri)) return;
-                    break;
-                case MediaGalleryActivity.REQUEST_CODE:
                     if (resultCode == Activity.RESULT_OK) {
-                        handleMediaGalleryResult(data);
+                        Uri mediaUri = data.getData();
+                        String authority = mediaUri.getAuthority();
+                        // check whether user has chosen media from the WP blog gallery
+                        if (authority.equals(getString(R.string.documents_provider_authority_api19))) {
+                            // TODO handle data for documents provider API 19+
+                            // WPDocumentsProvider.getPath
+                            ToastUtils.showToast(this, R.string.gallery_error, Duration.SHORT);
+                        }
+                        else if (authority.equals(getString(R.string.documents_provider_authority_below_api19))) {
+                            // TODO handle data for documents provider API below 19
+                            ToastUtils.showToast(this, R.string.gallery_error, Duration.SHORT);
+                        } else {
+                            // if not, let's fetch media from the device providers
+                            fetchMedia(Arrays.asList(mediaUri));
+                        }
                     }
-                    break;
-                case MediaGalleryPickerActivity.REQUEST_CODE:
-                    if (resultCode == Activity.RESULT_OK) {
-                        handleMediaGalleryPickerResult(data);
-                    }
-                    break;
-                case RequestCodes.PICTURE_LIBRARY:
-                    Uri imageUri = data.getData();
-                    fetchMedia(Arrays.asList(imageUri));
                     break;
                 case RequestCodes.TAKE_PHOTO:
                     if (resultCode == Activity.RESULT_OK) {
@@ -1619,10 +1622,6 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
                         }
                     }
                     break;
-                case RequestCodes.VIDEO_LIBRARY:
-                    Uri videoUri = data.getData();
-                    fetchMedia(Arrays.asList(videoUri));
-                    break;
                 case RequestCodes.TAKE_VIDEO:
                     if (resultCode == Activity.RESULT_OK) {
                         Uri capturedVideoUri = MediaUtils.getLastRecordedVideoUri(this);
@@ -1631,6 +1630,27 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
                         }
                     }
                     break;
+
+                // TODO: REMOVE OLD CASE HANDLING
+//                case MediaGalleryActivity.REQUEST_CODE:
+//                    if (resultCode == Activity.RESULT_OK) {
+//                        handleMediaGalleryResult(data);
+//                    }
+//                    break;
+//                case MediaGalleryPickerActivity.REQUEST_CODE:
+//                    if (resultCode == Activity.RESULT_OK) {
+//                        handleMediaGalleryPickerResult(data);
+//                    }
+//                    break;
+//                case RequestCodes.PICTURE_LIBRARY:
+//                    Uri imageUri = data.getData();
+//                    fetchMedia(Arrays.asList(imageUri));
+//                    break;
+//                case RequestCodes.VIDEO_LIBRARY:
+//                    Uri videoUri = data.getData();
+//                    fetchMedia(Arrays.asList(videoUri));
+//                    break;
+
             }
         }
     }
