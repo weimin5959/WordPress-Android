@@ -526,7 +526,7 @@ Language: zh_TW
 	<string name="show">顯示</string>
 	<string name="hide">隱藏</string>
 	<string name="deselect_all">取消全選</string>
-	<string name="select_from_new_picker">使用全新挑選器一次選取多個項目</string>
+	<string name="select_from_native_picker">使用全新挑選器一次選取多個項目</string>
 	<string name="loading_blog_videos">正在擷取影片</string>
 	<string name="no_media_sources">無法擷取媒體</string>
 	<string name="loading_blog_images">正在擷取圖片</string>

@@ -607,7 +607,7 @@ Language: ms
 	<string name="hide">Sembunyi</string>
 	<string name="show">Tunjuk</string>
 	<string name="select_all">Pilih semua</string>
-	<string name="select_from_new_picker">Pilihan jamak dengan pemetik baharu</string>
+	<string name="select_from_native_picker">Pilihan jamak dengan pemetik baharu</string>
 	<string name="no_media_sources">Tidak dapat mengambil media</string>
 	<string name="error_loading_images">Ralat memuat imej</string>
 	<string name="error_loading_videos">Ralat memuat video</string>

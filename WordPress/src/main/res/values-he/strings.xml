@@ -581,7 +581,7 @@ Language: he_IL
 	<string name="select_all">בחר הכל</string>
 	<string name="show">הצג</string>
 	<string name="sign_out_wpcom_confirm">ניתוק החשבון יסיר את כל נתוני וורדפרס.קום ‏של %s ממכשיר זה, כולל טיוטות מקומיות ושינויים מקומיים.</string>
-	<string name="select_from_new_picker">בחירה מרובה בעזרת רכיב חדש</string>
+	<string name="select_from_native_picker">בחירה מרובה בעזרת רכיב חדש</string>
 	<string name="no_media_sources">לא ניתן לטעון קבצי מדיה</string>
 	<string name="loading_blog_videos">טוען וידאו</string>
 	<string name="loading_blog_images">טוען תמונות</string>

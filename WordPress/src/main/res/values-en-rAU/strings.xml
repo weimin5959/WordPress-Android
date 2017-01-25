@@ -607,7 +607,7 @@ Language: en_AU
 	<string name="hide">Hide</string>
 	<string name="show">Show</string>
 	<string name="deselect_all">Deselect all</string>
-	<string name="select_from_new_picker">Multi-select with the new picker</string>
+	<string name="select_from_native_picker">Multi-select with the new picker</string>
 	<string name="no_media_sources">Couldn\'t fetch media</string>
 	<string name="loading_blog_videos">Fetching videos</string>
 	<string name="loading_blog_images">Fetching images</string>

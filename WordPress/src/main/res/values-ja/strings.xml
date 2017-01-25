@@ -564,7 +564,7 @@ Language: ja_JP
 	<string name="show">表示</string>
 	<string name="hide">隠す</string>
 	<string name="select_all">すべて選択</string>
-	<string name="select_from_new_picker">新しいピッカーでの複数選択</string>
+	<string name="select_from_native_picker">新しいピッカーでの複数選択</string>
 	<string name="error_loading_videos">動画読み込みエラー</string>
 	<string name="stats_generic_error">必須の統計情報が読み込めませんでした</string>
 	<string name="no_blog_images">画像なし</string>

@@ -547,7 +547,7 @@ Language: ar
 	<string name="show">إظهار</string>
 	<string name="hide">إخفاء</string>
 	<string name="deselect_all">إلغاء تحديد الكل</string>
-	<string name="select_from_new_picker">تحديد متعدد بأداة الانتقاء الجديدة</string>
+	<string name="select_from_native_picker">تحديد متعدد بأداة الانتقاء الجديدة</string>
 	<string name="no_media_sources">تعذر إحضار الوسائط</string>
 	<string name="loading_blog_images">جارٍ إحضار الصور</string>
 	<string name="loading_blog_videos">جارٍ إحضار مقاطع الفيديو</string>

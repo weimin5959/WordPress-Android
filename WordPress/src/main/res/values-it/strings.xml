@@ -607,7 +607,7 @@ Language: it
 	<string name="deselect_all">Deseleziona tutto</string>
 	<string name="show">Mostra</string>
 	<string name="sign_out_wpcom_confirm">Disconnettendo il tuo account rimuoverai tutti i dati @%s WordPress.com da questa periferica, comprese le bozze locali e le modifiche locali.</string>
-	<string name="select_from_new_picker">Scegli più voci con il nuovo selezionatore</string>
+	<string name="select_from_native_picker">Scegli più voci con il nuovo selezionatore</string>
 	<string name="loading_blog_images">Recupero immagini</string>
 	<string name="loading_blog_videos">Recupero video</string>
 	<string name="no_media_sources">Impossibile recuperare elementi media</string>

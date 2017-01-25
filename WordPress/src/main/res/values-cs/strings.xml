@@ -607,7 +607,7 @@ Language: cs_CZ
 	<string name="deselect_all">Zrušit výběr</string>
 	<string name="sign_out_wpcom_confirm">Po odpojení se vám z účtu vymažou všechny @%s  WordPress.com údaje z tohoto zařízení, včetně lokálních konceptů a změn.</string>
 	<string name="show">Zobrazit</string>
-	<string name="select_from_new_picker">Nový vícenásobný výběr</string>
+	<string name="select_from_native_picker">Nový vícenásobný výběr</string>
 	<string name="no_device_images">Žádné obrázky</string>
 	<string name="no_blog_videos">Žádná videa</string>
 	<string name="no_device_videos">Žádná videa</string>

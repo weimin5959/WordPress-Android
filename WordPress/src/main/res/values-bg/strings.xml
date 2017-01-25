@@ -599,7 +599,7 @@ Language: bg
 	<string name="deselect_all">От-маркиране на всичко</string>
 	<string name="show">Показване</string>
 	<string name="sign_out_wpcom_confirm">Излизането от профила ще премахне всички данни на @%s в WordPress.com от това устройство, включително локалните чернови и локалните промени.</string>
-	<string name="select_from_new_picker">Множествен избор с новия инструмен за избор</string>
+	<string name="select_from_native_picker">Множествен избор с новия инструмен за избор</string>
 	<string name="loading_blog_videos">Извличане на видеа</string>
 	<string name="error_loading_videos">Грешка при зареждане на видеата</string>
 	<string name="no_device_images">Няма налични изображения</string>

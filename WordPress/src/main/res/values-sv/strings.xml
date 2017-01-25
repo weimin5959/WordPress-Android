@@ -607,7 +607,7 @@ Language: sv_SE
 	<string name="hide">Dölj</string>
 	<string name="deselect_all">Avmarkera alla </string>
 	<string name="sign_out_wpcom_confirm">Att logga ut från ditt konto kommer ta bort all @%ss WordPress.com-data från denna enhet, inklusive lokala utkast och lokala förändringar.</string>
-	<string name="select_from_new_picker">Flerval med den nya väljaren</string>
+	<string name="select_from_native_picker">Flerval med den nya väljaren</string>
 	<string name="stats_generic_error">Nödvändig statistik kunde inte laddas in. </string>
 	<string name="error_loading_blog_images">Kunde inte hämta bilder </string>
 	<string name="no_device_videos">Inga videor</string>

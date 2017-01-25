@@ -607,7 +607,7 @@ Language: ro
 	<string name="select_all">Selectează tot</string>
 	<string name="show">Arată</string>
 	<string name="deselect_all">Deselectează tot</string>
-	<string name="select_from_new_picker">Fă o selecție multiplă cu noul selector</string>
+	<string name="select_from_native_picker">Fă o selecție multiplă cu noul selector</string>
 	<string name="error_loading_videos">Eroare încărcare video-uri</string>
 	<string name="error_loading_images">Eroare încărcare imagini</string>
 	<string name="no_device_images">Nicio imagine</string>

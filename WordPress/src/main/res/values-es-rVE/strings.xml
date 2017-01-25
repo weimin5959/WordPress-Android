@@ -599,7 +599,7 @@ Language: es_VE
 	<string name="show">Mostrar</string>
 	<string name="deselect_all">Anular todas las selecciones</string>
 	<string name="sign_out_wpcom_confirm">Si desconectas tu cuenta se eliminarán todos los datos de los datos en WordPress.com de @%s de este dispositivo, incluidos los borradores y los cambios locales.</string>
-	<string name="select_from_new_picker">Selección múltiple con el nuevo selector</string>
+	<string name="select_from_native_picker">Selección múltiple con el nuevo selector</string>
 	<string name="loading_blog_videos">Trayendo vídeos</string>
 	<string name="loading_blog_images">Trayendo imágenes</string>
 	<string name="error_loading_blog_videos">No se pudieron traer los vídeos</string>

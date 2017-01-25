@@ -607,7 +607,7 @@ Language: fr
 	<string name="show">Montrer</string>
 	<string name="deselect_all">Tout déselectionner</string>
 	<string name="sign_out_wpcom_confirm">Se déconnecter de votre compte supprimera toutes les données liées au compte @%s de WordPress.com sur cet appareil. Cela inclus les changements locaux et les brouillons.</string>
-	<string name="select_from_new_picker">Multi selection avec le nouveau selecteur</string>
+	<string name="select_from_native_picker">Multi selection avec le nouveau selecteur</string>
 	<string name="loading_blog_images">Récupération des images</string>
 	<string name="loading_blog_videos">Récupération des vidéos</string>
 	<string name="no_media_sources">Impossible de récupérer les medias</string>

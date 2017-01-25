@@ -607,7 +607,7 @@ Language: id
 	<string name="show">Tampilkan</string>
 	<string name="hide">Sembunyikan</string>
 	<string name="sign_out_wpcom_confirm">Log out dari akun Anda akan menghapus seluruh data WordPress.com dari @%s dalam perangkat ini, termasuk draf dan perubahan lokal.</string>
-	<string name="select_from_new_picker">Beberapa-pilihan dengan pemilih baru</string>
+	<string name="select_from_native_picker">Beberapa-pilihan dengan pemilih baru</string>
 	<string name="loading_blog_images">Memuat gambar</string>
 	<string name="loading_blog_videos">Memuat video</string>
 	<string name="no_media_sources">Gagal memuat media</string>

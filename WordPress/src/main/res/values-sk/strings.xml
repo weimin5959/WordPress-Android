@@ -391,7 +391,7 @@ Language: sk
 	<string name="hide">Skryť</string>
 	<string name="show">Zobraziť</string>
 	<string name="deselect_all">Odznačiť všetky</string>
-	<string name="select_from_new_picker">Viacnásobný výber v novej možnosti výberu</string>
+	<string name="select_from_native_picker">Viacnásobný výber v novej možnosti výberu</string>
 	<string name="no_media_sources">Nie je možné načítať súbory</string>
 	<string name="loading_blog_videos">Načítavajú sa videá</string>
 	<string name="loading_blog_images">Načítavajú sa obrázky</string>

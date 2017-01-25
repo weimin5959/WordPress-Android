@@ -134,6 +134,7 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
     private static final int CAPTURE_PHOTO_MENU_POSITION = 0;
     private static final int CAPTURE_VIDEO_MENU_POSITION = 1;
     private static final int NATIVE_MEDIA_PICKER_MENU_POSITION = 2;
+    private static final int ADD_GALLERY_MENU_POSITION = 3;
 
     public static final int MEDIA_PERMISSION_REQUEST_CODE = 1;
     public static final int LOCATION_PERMISSION_REQUEST_CODE = 2;
@@ -694,7 +695,9 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
             menu.add(0, CAPTURE_VIDEO_MENU_POSITION, 0, getResources().getText(R.string.media_add_popup_capture_video));
         }
 
-        menu.add(0, NATIVE_MEDIA_PICKER_MENU_POSITION, 0, getResources().getText(R.string.select_from_new_picker));
+        menu.add(0, NATIVE_MEDIA_PICKER_MENU_POSITION, 0, getResources().getText(R.string.select_from_native_picker));
+        menu.add(0, ADD_GALLERY_MENU_POSITION, 0, getResources().getText(R.string.media_add_new_media_gallery));
+
     }
 
     @Override
@@ -708,6 +711,9 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
                 return true;
             case NATIVE_MEDIA_PICKER_MENU_POSITION:
                 launchMediaSelectIntent();
+                return true;
+            case ADD_GALLERY_MENU_POSITION:
+                startMediaGalleryActivity(null);
                 return true;
             default:
                 return false;
@@ -1622,12 +1628,13 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
                     }
                     break;
 
+                case MediaGalleryActivity.REQUEST_CODE:
+                    if (resultCode == Activity.RESULT_OK) {
+                        handleMediaGalleryResult(data);
+                    }
+                    break;
+
                 // TODO: REMOVE OLD CASE HANDLING
-//                case MediaGalleryActivity.REQUEST_CODE:
-//                    if (resultCode == Activity.RESULT_OK) {
-//                        handleMediaGalleryResult(data);
-//                    }
-//                    break;
 //                case MediaGalleryPickerActivity.REQUEST_CODE:
 //                    if (resultCode == Activity.RESULT_OK) {
 //                        handleMediaGalleryPickerResult(data);

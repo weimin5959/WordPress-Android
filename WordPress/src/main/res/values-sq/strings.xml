@@ -607,7 +607,7 @@ Language: sq_AL
 	<string name="select_all">Përzgjidhe krejt</string>
 	<string name="deselect_all">Përzgjidhe/Shpërzgjidhe krejt</string>
 	<string name="sign_out_wpcom_confirm">Dalja nga llogaria juaj do të heqë prej kësaj pajisje krejt të dhënat WordPress.com për @%s, përfshi skica dhe ndryshime vendore.</string>
-	<string name="select_from_new_picker">Përzgjidhni shumëfish me marrësin e ri</string>
+	<string name="select_from_native_picker">Përzgjidhni shumëfish me marrësin e ri</string>
 	<string name="error_loading_images">Gabim në ngarkim figurash</string>
 	<string name="error_loading_videos">Gabim në ngarkim videosh</string>
 	<string name="loading_blog_images">Po sillen figura</string>

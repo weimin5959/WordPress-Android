@@ -277,7 +277,7 @@ Language: th
 	<string name="show">แสดง</string>
 	<string name="deselect_all">ไม่เลือกทั้งหมด</string>
 	<string name="sign_out_wpcom_confirm">ตัดการเชื่อมต่อบัญชีของคุณจะลบข้อมูลทั้งหมดของ @%s’s WordPress.com ออกจากอุปกรณ์นี้  รวมถึงฉบับร่างและการเปลี่ยนแปลงในเครื่องด้วย</string>
-	<string name="select_from_new_picker">การเลือกหลายสิ่งด้วยตัวเลือกแบบใหม่</string>
+	<string name="select_from_native_picker">การเลือกหลายสิ่งด้วยตัวเลือกแบบใหม่</string>
 	<string name="no_blog_videos">ไม่มีวีดีโอ</string>
 	<string name="no_media_sources">ไม่สามารถดึงข้อมูลไฟล์สื่อ</string>
 	<string name="loading_blog_videos">กำลังดึงข้อมูลวีดีโอ</string>

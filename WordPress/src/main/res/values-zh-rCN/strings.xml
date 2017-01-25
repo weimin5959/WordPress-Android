@@ -540,7 +540,7 @@ Language: zh_CN
 	<string name="select_all">选择全部</string>
 	<string name="show">显示</string>
 	<string name="deselect_all">全部不选</string>
-	<string name="select_from_new_picker">使用全新选择器进行多选</string>
+	<string name="select_from_native_picker">使用全新选择器进行多选</string>
 	<string name="loading_blog_videos">正在获取视频</string>
 	<string name="no_media_sources">无法获取媒体</string>
 	<string name="error_loading_videos">加载视频时出错</string>

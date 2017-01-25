@@ -564,7 +564,7 @@ Language: de
 	<string name="hide">Ausblenden</string>
 	<string name="show">Anzeigen</string>
 	<string name="deselect_all">Alle abwählen</string>
-	<string name="select_from_new_picker">Mehrfach-Auswahl mit dem neuen Auswahlwerkzeug</string>
+	<string name="select_from_native_picker">Mehrfach-Auswahl mit dem neuen Auswahlwerkzeug</string>
 	<string name="no_media_sources">Konnte Medien nicht abrufen</string>
 	<string name="loading_blog_videos">Videos werden abgerufen</string>
 	<string name="loading_blog_images">Bilder werden abgerufen</string>

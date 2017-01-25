@@ -607,7 +607,7 @@ Language: is
 	<string name="select_all">Velja allar</string>
 	<string name="deselect_all">Afvelja allt</string>
 	<string name="sign_out_wpcom_confirm">Með því að skrá þig út úr aðgangnum þínum fjarlægir þú öll WordPress.com gögn @%s úr þessu tæki, þar með talið staðvær drög og breytingar.</string>
-	<string name="select_from_new_picker">Veldu fleiri en eitt atriði með nýjum valmöguleika</string>
+	<string name="select_from_native_picker">Veldu fleiri en eitt atriði með nýjum valmöguleika</string>
 	<string name="error_loading_videos">Villa við að hlaða myndbönd</string>
 	<string name="loading_blog_images">Sæki myndir</string>
 	<string name="loading_blog_videos">Sæki myndbönd</string>

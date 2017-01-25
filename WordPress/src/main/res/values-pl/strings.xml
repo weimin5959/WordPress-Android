@@ -607,7 +607,7 @@ Language: pl
 	<string name="select_all">Wybierz wszystko</string>
 	<string name="deselect_all">Odznacz wszystko</string>
 	<string name="sign_out_wpcom_confirm">Wylogowanie z konta usunie z tego urządzenia wszystkie dane @%s pochodzące z WordPress.com, łącznie z lokalnymi szkicami i lokalnymi zmianami treści.</string>
-	<string name="select_from_new_picker">Wybierz media z kilku źródeł</string>
+	<string name="select_from_native_picker">Wybierz media z kilku źródeł</string>
 	<string name="no_media_sources">Nie udało się załadować mediów</string>
 	<string name="loading_blog_videos">Ładowanie filmów</string>
 	<string name="error_loading_videos">Błąd podczas ładowania filmów</string>

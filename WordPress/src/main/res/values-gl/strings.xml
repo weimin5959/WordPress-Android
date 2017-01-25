@@ -596,7 +596,7 @@ Language: gl_ES
 	<string name="select_all">Seleccionar todo</string>
 	<string name="deselect_all">Desmarcar todo</string>
 	<string name="sign_out_wpcom_confirm">Ao desconectar da túa conta borraranse todos os datos de  @%s’s WordPress.com neste dispositivo, incluídos borradores e cambios locais.</string>
-	<string name="select_from_new_picker">Selección múltiple co novo selector</string>
+	<string name="select_from_native_picker">Selección múltiple co novo selector</string>
 	<string name="no_device_videos">Non hai vídeos</string>
 	<string name="no_blog_images">Non hai imaxes</string>
 	<string name="no_blog_videos">Non hai vídeos</string>

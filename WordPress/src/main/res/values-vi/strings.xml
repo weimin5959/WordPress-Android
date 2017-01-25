@@ -526,7 +526,7 @@ Language: vi_VN
 	<string name="hide">Ẩn</string>
 	<string name="show">Hiện</string>
 	<string name="deselect_all">Bỏ chọn tất cả</string>
-	<string name="select_from_new_picker">Nhiều lựa chọn với công cụ chọn mới</string>
+	<string name="select_from_native_picker">Nhiều lựa chọn với công cụ chọn mới</string>
 	<string name="no_media_sources">Không thể tìm nạp media</string>
 	<string name="loading_blog_videos">Đang tìm nạp video</string>
 	<string name="loading_blog_images">Đang lấy ảnh</string>

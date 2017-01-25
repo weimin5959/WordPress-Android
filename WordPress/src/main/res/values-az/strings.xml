@@ -80,7 +80,7 @@ Language: az
 	<string name="show">Göstər</string>
 	<string name="hide">Gizlət</string>
 	<string name="select_all">Tamamını seç</string>
-	<string name="select_from_new_picker">Yeni seçici ilə birdən çox maddə seç</string>
+	<string name="select_from_native_picker">Yeni seçici ilə birdən çox maddə seç</string>
 	<string name="stats_generic_error">Gərəkli statistikalar yüklənmir</string>
 	<string name="no_device_videos">Video yoxdur</string>
 	<string name="no_blog_images">Təsvir yoxdur</string>

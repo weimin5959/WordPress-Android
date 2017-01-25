@@ -552,7 +552,7 @@ Language: ru
 	<string name="hide">Скрыть</string>
 	<string name="show">Показать</string>
 	<string name="deselect_all">Снять выделение</string>
-	<string name="select_from_new_picker">Множественный выбор с помощью нового диалога</string>
+	<string name="select_from_native_picker">Множественный выбор с помощью нового диалога</string>
 	<string name="no_media_sources">Не удалось загрузить медиафайлы</string>
 	<string name="loading_blog_videos">Загрузка видео</string>
 	<string name="loading_blog_images">Загрузка изображений</string>
