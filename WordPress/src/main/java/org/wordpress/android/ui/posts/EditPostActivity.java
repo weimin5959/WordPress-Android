@@ -7,6 +7,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -1593,15 +1594,7 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
             switch (requestCode) {
                 case RequestCodes.PICK_MEDIA:
                     if (resultCode == Activity.RESULT_OK) {
-                        Uri mediaUri = data.getData();
-                        // check whether user has chosen media from the WP blog gallery
-                        if (isWPDocumentProviderAuthority(mediaUri)) {
-                            long mediaItemId = ContentUris.parseId(mediaUri);
-                            addExistingMediaToEditor(String.valueOf(mediaItemId));
-                        } else {
-                            // if not, let's fetch media from the device providers
-                            fetchMedia(Arrays.asList(mediaUri));
-                        }
+                        handlePickedMedia(data);
                     }
                     break;
                 case RequestCodes.TAKE_PHOTO:
@@ -1634,7 +1627,7 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
                     }
                     break;
 
-                // TODO: REMOVE OLD CASE HANDLING
+                // TODO: REMOVE OLD CASE HANDLING AND RELATED CODE
 //                case MediaGalleryPickerActivity.REQUEST_CODE:
 //                    if (resultCode == Activity.RESULT_OK) {
 //                        handleMediaGalleryPickerResult(data);
@@ -1653,6 +1646,40 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
         }
     }
 
+    private void handlePickedMedia(Intent data) {
+        // check if only one selection, mediaUri should be set and returend by getData()
+        Uri mediaUri = data.getData();
+        if (mediaUri != null) {
+            processMediaUri(mediaUri);
+        } else {
+            // otherwise let's check for multiple selection
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                ClipData clipData = data.getClipData();
+                if (clipData != null) {
+                    for (int i=0; i < clipData.getItemCount();i++) {
+                        processMediaUri(clipData.getItemAt(i).getUri());
+                    }
+                } else {
+                    // fail
+                    ToastUtils.showToast(this, R.string.gallery_error, Duration.SHORT);
+                }
+            } else {
+                // fail
+                ToastUtils.showToast(this, R.string.gallery_error, Duration.SHORT);
+            }
+        }
+    }
+
+    private void processMediaUri(Uri mediaUri) {
+        // check whether user has chosen media from the WP blog gallery
+        if (isWPDocumentProviderAuthority(mediaUri)) {
+            long mediaItemId = ContentUris.parseId(mediaUri);
+            addExistingMediaToEditor(String.valueOf(mediaItemId));
+        } else {
+            // if not, let's fetch media from the device providers
+            fetchMedia(Arrays.asList(mediaUri));
+        }
+    }
 
     private boolean isWPDocumentProviderAuthority(Uri uri) {
         if (uri == null) return false;
