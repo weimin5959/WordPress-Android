@@ -1670,6 +1670,11 @@
     <string name="enter_username_or_email">Please enter your username or email address. We\'ll send you a link to create a new password via email.</string>
     <string name="username_or_email">Username or email</string>
     <string name="log_in">Log In</string>
-    <string name="create_wordpress_site">Create WordPress site</string>
+    <string name="create_wordpress_site">Create a site on WordPress.com</string>
+    <string name="login_hosting_question">Log in to my existing site at</string>
+    <string name="login_hosting_my_url">My URL</string>
+    <string name="login_hosting_not_sure">I\'m not sure</string>
+    <string name="login_or">or</string>
+    <string name="login_promo_proposition">Catch up with your favorite sites and join the conversation anywhere</string>
 
 </resources>

@@ -1,17 +1,5 @@
 package org.wordpress.android.ui.accounts;
 
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
-import android.view.Window;
-import android.widget.Toast;
-
 import com.google.android.gms.auth.api.credentials.Credential;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -24,8 +12,8 @@ import org.wordpress.android.analytics.AnalyticsTracker.Stat;
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.store.SiteStore;
 import org.wordpress.android.ui.ActivityId;
-import org.wordpress.android.ui.accounts.login.LogInOrSignUpFragment;
 import org.wordpress.android.ui.accounts.login.LoginEmailFragment;
+import org.wordpress.android.ui.accounts.login.LoginHostingFragment;
 import org.wordpress.android.ui.accounts.login.LoginSiteAddressFragment;
 import org.wordpress.android.ui.accounts.login.LoginUsernamePasswordFragment;
 import org.wordpress.android.ui.accounts.login.MagicLinkRequestFragment;
@@ -34,6 +22,18 @@ import org.wordpress.android.ui.main.WPMainActivity;
 import org.wordpress.android.util.AppLog;
 import org.wordpress.android.util.AppLog.T;
 import org.wordpress.android.util.HelpshiftHelper;
+
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.view.Window;
+import android.widget.Toast;
 
 import javax.inject.Inject;
 
@@ -44,7 +44,7 @@ public class SignInActivity extends AppCompatActivity implements ConnectionCallb
         LoginEmailPasswordFragment.OnEmailPasswordLoginInteraction,
         LoginSiteAddressFragment.OnSiteAddressRequestInteraction,
         LoginUsernamePasswordFragment.OnLoginUsernamePasswordInteraction,
-        LogInOrSignUpFragment.OnLogInOrSignUpFragmentInteraction {
+        LoginHostingFragment.OnLoginHostingInteraction {
     public static final boolean USE_NEW_LOGIN_FLOWS = true;
 
     public static final int SIGN_IN_REQUEST = 1;
@@ -253,9 +253,9 @@ public class SignInActivity extends AppCompatActivity implements ConnectionCallb
             fragmentTransaction.replace(R.id.fragment_container, signInFragment, SignInFragment.TAG);
             fragmentTransaction.commit();
         } else {
-            LogInOrSignUpFragment loginSignupFragment = new LogInOrSignUpFragment();
+            LoginHostingFragment loginHostingFragment = new LoginHostingFragment();
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_container, loginSignupFragment, LogInOrSignUpFragment.TAG);
+            fragmentTransaction.replace(R.id.fragment_container, loginHostingFragment, LoginHostingFragment.TAG);
             fragmentTransaction.commit();
         }
     }
@@ -390,9 +390,21 @@ public class SignInActivity extends AppCompatActivity implements ConnectionCallb
     }
 
     @Override
-    public void onLoginTapped() {
+    public void onWordPressComTapped() {
         LoginEmailFragment loginEmailFragment = new LoginEmailFragment();
         slideInFragment(loginEmailFragment, LoginEmailFragment.TAG);
+    }
+
+    @Override
+    public void onMyUrlTapped() {
+        LoginSiteAddressFragment loginSiteAddressFragment = new LoginSiteAddressFragment();
+        slideInFragment(loginSiteAddressFragment, LoginSiteAddressFragment.TAG);
+    }
+
+    @Override
+    public void onImNotSureTapped() {
+        LoginSiteAddressFragment loginSiteAddressFragment = new LoginSiteAddressFragment();
+        slideInFragment(loginSiteAddressFragment, LoginSiteAddressFragment.TAG);
     }
 
     @Override
