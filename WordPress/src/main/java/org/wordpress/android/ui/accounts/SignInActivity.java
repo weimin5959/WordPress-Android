@@ -14,9 +14,7 @@ import org.wordpress.android.fluxc.store.SiteStore;
 import org.wordpress.android.ui.ActivityId;
 import org.wordpress.android.ui.accounts.login.LogInOrSignUpFragment;
 import org.wordpress.android.ui.accounts.login.LoginEmailFragment;
-import org.wordpress.android.ui.accounts.login.LoginEmailWpcomFragment;
 import org.wordpress.android.ui.accounts.login.LoginSiteAddressFragment;
-import org.wordpress.android.ui.accounts.login.LoginSiteAddressUsernamePasswordFragment;
 import org.wordpress.android.ui.accounts.login.LoginUsernamePasswordFragment;
 import org.wordpress.android.ui.accounts.login.MagicLinkRequestFragment;
 import org.wordpress.android.ui.accounts.login.MagicLinkSentFragment;
@@ -46,9 +44,7 @@ public class SignInActivity extends AppCompatActivity implements ConnectionCallb
         LoginEmailPasswordFragment.OnEmailPasswordLoginInteraction,
         LoginSiteAddressFragment.OnSiteAddressRequestInteraction,
         LoginUsernamePasswordFragment.OnLoginUsernamePasswordInteraction,
-        LogInOrSignUpFragment.OnLogInOrSignUpFragmentInteraction,
-        LoginEmailWpcomFragment.OnEmailWpcomInteraction,
-        LoginSiteAddressUsernamePasswordFragment.OnSiteAddressUsernamePasswordInteraction {
+        LogInOrSignUpFragment.OnLogInOrSignUpFragmentInteraction {
     public static final boolean USE_NEW_LOGIN_FLOWS = true;
 
     public static final int SIGN_IN_REQUEST = 1;
@@ -216,13 +212,13 @@ public class SignInActivity extends AppCompatActivity implements ConnectionCallb
         }
     }
 
-    public LoginEmailWpcomFragment getLoginEmailFragment() {
-        LoginEmailWpcomFragment loginEmailWpcomFragment =
-                (LoginEmailWpcomFragment) getSupportFragmentManager().findFragmentByTag(LoginEmailWpcomFragment.TAG);
-        if (loginEmailWpcomFragment == null) {
-            return new LoginEmailWpcomFragment();
+    public LoginEmailFragment getLoginEmailFragment() {
+        LoginEmailFragment loginEmailFragment =
+                (LoginEmailFragment) getSupportFragmentManager().findFragmentByTag(LoginEmailFragment.TAG);
+        if (loginEmailFragment == null) {
+            return new LoginEmailFragment();
         } else {
-            return loginEmailWpcomFragment;
+            return loginEmailFragment;
         }
     }
 
@@ -335,14 +331,9 @@ public class SignInActivity extends AppCompatActivity implements ConnectionCallb
     }
 
     @Override
-    public void onLoginViaUsernamePassword() {
-        slideInFragment(new LoginSiteAddressFragment(), LoginSiteAddressFragment.TAG);
-    }
-
-    @Override
-    public void onNoWpcomAccount(String siteAddress) {
-        LoginSiteAddressUsernamePasswordFragment loginSiteAddressUsernamePasswordFragment = LoginSiteAddressUsernamePasswordFragment.newInstance(siteAddress, false);
-        slideInFragment(loginSiteAddressUsernamePasswordFragment, LoginSiteAddressUsernamePasswordFragment.TAG);
+    public void onLoginViaUsernamePassword(String siteAddress, boolean isSelfHosted) {
+        LoginUsernamePasswordFragment loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(siteAddress, isSelfHosted);
+        slideInFragment(loginUsernamePasswordFragment, LoginSiteAddressFragment.TAG);
     }
 
     @Override
@@ -370,8 +361,7 @@ public class SignInActivity extends AppCompatActivity implements ConnectionCallb
     @Override
     public void onSiteAddressRequestSuccess(String siteAddress, boolean isSelfHosted) {
         if (!isSelfHosted) {
-            LoginEmailWpcomFragment loginEmailWpcomFragment = LoginEmailWpcomFragment.newInstance(siteAddress);
-            slideInFragment(loginEmailWpcomFragment, LoginEmailWpcomFragment.TAG);
+            slideInFragment(new LoginEmailFragment(), LoginEmailFragment.TAG);
         } else {
             LoginUsernamePasswordFragment loginUsernamePasswordFragment = LoginUsernamePasswordFragment.newInstance(siteAddress, isSelfHosted);
             slideInFragment(loginUsernamePasswordFragment, LoginUsernamePasswordFragment.TAG);

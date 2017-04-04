@@ -5,8 +5,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.wordpress.android.BuildConfig;
 import org.wordpress.android.R;
 import org.wordpress.android.WordPress;
-import org.wordpress.android.analytics.AnalyticsTracker;
-import org.wordpress.android.analytics.AnalyticsTracker.Stat;
 import org.wordpress.android.fluxc.Dispatcher;
 import org.wordpress.android.fluxc.generated.AccountActionBuilder;
 import org.wordpress.android.fluxc.store.AccountStore;
@@ -45,6 +43,9 @@ public class LoginEmailFragment extends AbstractFragment implements TextWatcher 
     public static final String TAG = "login_email_fragment_tag";
     public static final int MAX_EMAIL_LENGTH = 100;
 
+    private static final String ARG_SITE_ADDRESS = "arg_site_address";
+    private static final String ARG_IS_SELF_HOSTED = "arg_is_self_hosted";
+
     protected EditText mEmailEditText;
 
     protected boolean mEmailAutoCorrected;
@@ -53,13 +54,16 @@ public class LoginEmailFragment extends AbstractFragment implements TextWatcher 
     protected Button mNextButton;
     protected View mUsernamePasswordButton;
 
+    protected String mSiteAddress;
+    protected boolean mSelfHosted;
+
     protected @Inject SiteStore mSiteStore;
     protected @Inject AccountStore mAccountStore;
     protected @Inject Dispatcher mDispatcher;
 
     public interface OnMagicLinkEmailInteraction {
         void onMagicLinkEmailCheckSuccess(String email);
-        void onLoginViaUsernamePassword();
+        void onLoginViaUsernamePassword(String siteAddress, boolean isSelfHosted);
     }
     private OnMagicLinkEmailInteraction mListener;
 
@@ -67,12 +71,24 @@ public class LoginEmailFragment extends AbstractFragment implements TextWatcher 
         return mEmail;
     }
 
+    public static LoginUsernamePasswordFragment newInstance(String siteAddress, boolean isSelfHosted) {
+        LoginUsernamePasswordFragment fragment = new LoginUsernamePasswordFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_SITE_ADDRESS, siteAddress);
+        args.putBoolean(ARG_IS_SELF_HOSTED, isSelfHosted);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((WordPress) getActivity().getApplication()).component().inject(this);
 
-        AnalyticsTracker.track(Stat.LOGIN_ACCESSED);
+        if (getArguments() != null) {
+            mSiteAddress = getArguments().getString(ARG_SITE_ADDRESS);
+            mSelfHosted = getArguments().getBoolean(ARG_IS_SELF_HOSTED);
+        }
     }
 
     @Override
@@ -110,7 +126,7 @@ public class LoginEmailFragment extends AbstractFragment implements TextWatcher 
         mUsernamePasswordButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onLoginViaUsernamePassword();
+                mListener.onLoginViaUsernamePassword(mSiteAddress, mSelfHosted);
             }
         });
 
