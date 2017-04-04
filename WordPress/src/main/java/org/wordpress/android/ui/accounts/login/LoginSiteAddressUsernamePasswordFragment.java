@@ -31,33 +31,29 @@ import org.wordpress.android.fluxc.store.SiteStore.RefreshSitesXMLRPCPayload;
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType;
 import org.wordpress.android.ui.ActivityLauncher;
 import org.wordpress.android.ui.accounts.AbstractFragment;
-import org.wordpress.android.ui.accounts.NewUserFragment;
-import org.wordpress.android.ui.accounts.SignInActivity;
 import org.wordpress.android.ui.accounts.SignInDialogFragment;
-import org.wordpress.android.ui.accounts.SmartLockHelper;
 import org.wordpress.android.ui.notifications.services.NotificationsUpdateService;
 import org.wordpress.android.util.AnalyticsUtils;
 import org.wordpress.android.util.AppLog;
 import org.wordpress.android.util.AppLog.T;
 import org.wordpress.android.util.EditTextUtils;
 import org.wordpress.android.util.HelpshiftHelper;
-import org.wordpress.android.util.HtmlUtils;
 import org.wordpress.android.util.NetworkUtils;
 import org.wordpress.android.util.SelfSignedSSLUtils;
 import org.wordpress.android.util.SelfSignedSSLUtils.Callback;
 import org.wordpress.android.util.ToastUtils;
+import org.wordpress.android.util.ToastUtils.Duration;
 import org.wordpress.android.util.UrlUtils;
 import org.wordpress.android.util.WPUrlUtils;
+import org.wordpress.emailchecker2.EmailChecker;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -70,19 +66,25 @@ import android.widget.TextView;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
-public class LoginUsernamePasswordFragment extends AbstractFragment implements TextWatcher {
-    public static final String TAG = "login_username_password_fragment_tag";
+public class LoginSiteAddressUsernamePasswordFragment extends AbstractFragment implements TextWatcher {
+    private static String ARG_SITE_ADDRESS = "siteAddress";
+    private static String ARG_IS_SELF_HOSTED = "isSelfHosted";
 
-    private static final String ARG_SITE_ADDRESS = "arg_site_address";
-    private static final String ARG_IS_SELF_HOSTED = "arg_is_self_hosted";
+    public static final String TAG = "login_site_address_username_password_fragment_tag";
 
+    public static final int MAX_EMAIL_LENGTH = 100;
     private static final String DOT_COM_BASE_URL = "https://wordpress.com";
     private static final String FORGOT_PASSWORD_RELATIVE_URL = "/wp-login.php?action=lostpassword";
     private static final int WPCOM_ERRONEOUS_LOGIN_THRESHOLD = 3;
-    private static final String KEY_IS_SELF_HOSTED = "IS_SELF_HOSTED";
+    private static final Pattern DOT_COM_RESERVED_NAMES =
+            Pattern.compile("^(?:admin|administrator|invite|main|root|web|www|[^@]*wordpress[^@]*)$");
+    private static final Pattern TWO_STEP_AUTH_CODE = Pattern.compile("^[0-9]{6}");
+    private static final Pattern WPCOM_DOMAIN = Pattern.compile("[a-z0-9]+\\.wordpress\\.com");
 
     public static final String ENTERED_URL_KEY = "ENTERED_URL_KEY";
     public static final String ENTERED_USERNAME_KEY = "ENTERED_USERNAME_KEY";
@@ -98,15 +100,16 @@ public class LoginUsernamePasswordFragment extends AbstractFragment implements T
 
     protected EditText mUsernameEditText;
     protected EditText mPasswordEditText;
+    protected EditText mSiteAddressEditText;
+
+    protected boolean mSelfHosted;
+    protected boolean mEmailAutoCorrected;
 
     protected String mSiteAddress;
-    protected boolean mSelfHosted;
-    protected int mErroneousLogInCount;
     protected String mUsername;
     protected String mPassword;
 
     protected Button mLoginButton;
-
     protected View mLostPassword;
 
     protected @Inject SiteStore mSiteStore;
@@ -119,22 +122,24 @@ public class LoginUsernamePasswordFragment extends AbstractFragment implements T
     protected boolean mAccountSettingsFetched = false;
     protected boolean mAccountFetched = false;
 
-    private OnLoginUsernamePasswordInteraction mListener;
+    private OnSiteAddressUsernamePasswordInteraction mListener;
 
     private boolean mSmartLockEnabled = true;
     private boolean mIsActivityFinishing;
+    protected int mErroneousLogInCount;
 
-    public interface OnLoginUsernamePasswordInteraction {
+    public interface OnSiteAddressUsernamePasswordInteraction {
         void onUsernamePasswordLoginSuccess();
     }
 
-    public static LoginUsernamePasswordFragment newInstance(String siteAddress, boolean isSelfHosted) {
-        LoginUsernamePasswordFragment fragment = new LoginUsernamePasswordFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_SITE_ADDRESS, siteAddress);
-        args.putBoolean(ARG_IS_SELF_HOSTED, isSelfHosted);
-        fragment.setArguments(args);
-        return fragment;
+    public static LoginSiteAddressUsernamePasswordFragment newInstance(String siteAddress, boolean isSelfHosted) {
+        LoginSiteAddressUsernamePasswordFragment lsaupf = new LoginSiteAddressUsernamePasswordFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(ARG_SITE_ADDRESS, siteAddress);
+        bundle.putBoolean(ARG_IS_SELF_HOSTED, isSelfHosted);
+
+        lsaupf.setArguments(bundle);
+        return lsaupf;
     }
 
     @Override
@@ -142,31 +147,36 @@ public class LoginUsernamePasswordFragment extends AbstractFragment implements T
         super.onCreate(savedInstanceState);
         ((WordPress) getActivity().getApplication()).component().inject(this);
 
-        if (getArguments() != null) {
-            mSiteAddress = getArguments().getString(ARG_SITE_ADDRESS);
-            mSelfHosted = getArguments().getBoolean(ARG_IS_SELF_HOSTED);
-        }
+        mSiteAddress = getArguments().getString(ARG_SITE_ADDRESS);
+        mSelfHosted = getArguments().getBoolean(ARG_IS_SELF_HOSTED);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.login_username_password_screen, container, false);
+        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.login_site_address_username_password_screen, container, false);
 
-        TextView siteAddressTextView = (TextView) rootView.findViewById(R.id.site_address);
-        siteAddressTextView.setText(mSiteAddress);
-
+        mSiteAddressEditText = (EditText) rootView.findViewById(R.id.site_address);
+        mSiteAddressEditText.addTextChangedListener(this);
         mUsernameEditText = (EditText) rootView.findViewById(R.id.username);
         mUsernameEditText.addTextChangedListener(this);
         mPasswordEditText = (EditText) rootView.findViewById(R.id.password);
         mPasswordEditText.addTextChangedListener(this);
-
         mLoginButton = (Button) rootView.findViewById(R.id.login_button);
-        mLoginButton.setOnClickListener(mSignInClickListener);
+        mLoginButton.setOnClickListener(mLoginClickListener);
 
         mLostPassword = rootView.findViewById(R.id.lost_password);
         mLostPassword.setOnClickListener(mLostPasswordListener);
 
+        mUsernameEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    autocorrectUsername();
+                }
+            }
+        });
+
         mPasswordEditText.setOnEditorActionListener(mEditorAction);
+        mSiteAddressEditText.setOnEditorActionListener(mEditorAction);
 
         autofillFromBuildConfig();
 
@@ -181,22 +191,20 @@ public class LoginUsernamePasswordFragment extends AbstractFragment implements T
                 }
             }
         });
+
+        mSiteAddressEditText.setText(mSiteAddress);
+
         return rootView;
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof LoginUsernamePasswordFragment.OnLoginUsernamePasswordInteraction) {
-            mListener = (LoginUsernamePasswordFragment.OnLoginUsernamePasswordInteraction) context;
+        if (context instanceof OnSiteAddressUsernamePasswordInteraction) {
+            mListener = (OnSiteAddressUsernamePasswordInteraction) context;
         } else {
-            throw new RuntimeException(context.toString() + " must implement OnLoginUsernamePasswordInteraction");
+            throw new RuntimeException(context.toString() + " must implement OnSiteAddressUsernamePasswordInteraction");
         }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
     }
 
     /*
@@ -222,11 +230,11 @@ public class LoginUsernamePasswordFragment extends AbstractFragment implements T
 
     public boolean canAutofillUsernameAndPassword() {
         return EditTextUtils.getText(mUsernameEditText).isEmpty()
-               && EditTextUtils.getText(mPasswordEditText).isEmpty()
-               && mUsernameEditText != null
-               && mPasswordEditText != null
-               && mSmartLockEnabled
-               && !mSelfHosted;
+                && EditTextUtils.getText(mPasswordEditText).isEmpty()
+                && mUsernameEditText != null
+                && mPasswordEditText != null
+                && mSmartLockEnabled
+                && !mSelfHosted;
     }
 
     public void onCredentialRetrieved(Credential credential) {
@@ -238,15 +246,36 @@ public class LoginUsernamePasswordFragment extends AbstractFragment implements T
         }
     }
 
+    private void autocorrectUsername() {
+        if (mEmailAutoCorrected) {
+            return;
+        }
+        final String email = EditTextUtils.getText(mUsernameEditText).trim();
+        // Check if the username looks like an email address
+        final Pattern emailRegExPattern = Patterns.EMAIL_ADDRESS;
+        Matcher matcher = emailRegExPattern.matcher(email);
+        if (!matcher.find()) {
+            return;
+        }
+        // It looks like an email address, then try to correct it
+        String suggest = EmailChecker.suggestDomainCorrection(email);
+        if (suggest.compareTo(email) != 0) {
+            mEmailAutoCorrected = true;
+            mUsernameEditText.setText(suggest);
+            mUsernameEditText.setSelection(suggest.length());
+        }
+    }
+
     private boolean isWPComLogin() {
-        return !mSelfHosted || TextUtils.isEmpty(mSiteAddress) ||
-                WPUrlUtils.isWordPressCom(UrlUtils.addUrlSchemeIfNeeded(mSiteAddress, false));
+        String selfHostedUrl = EditTextUtils.getText(mSiteAddressEditText).trim();
+        return !mSelfHosted || TextUtils.isEmpty(selfHostedUrl) ||
+                WPUrlUtils.isWordPressCom(UrlUtils.addUrlSchemeIfNeeded(selfHostedUrl, false));
     }
 
     private String getForgotPasswordURL() {
         String baseUrl = DOT_COM_BASE_URL;
         if (!isWPComLogin()) {
-            baseUrl = mSiteAddress.trim();
+            baseUrl = EditTextUtils.getText(mSiteAddressEditText).trim();
             String lowerCaseBaseUrl = baseUrl.toLowerCase(Locale.getDefault());
             if (!lowerCaseBaseUrl.startsWith("https://") && !lowerCaseBaseUrl.startsWith("http://")) {
                 baseUrl = "http://" + baseUrl;
@@ -272,9 +301,14 @@ public class LoginUsernamePasswordFragment extends AbstractFragment implements T
         @Override
         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
             if (mPasswordEditText == v) {
-                return onDoneEvent(actionId, event);
+                if (mSelfHosted) {
+                    mSiteAddressEditText.requestFocus();
+                    return true;
+                } else {
+                    return onDoneEvent(actionId, event);
+                }
             }
-            return false;
+            return onDoneEvent(actionId, event);
         }
     };
 
@@ -288,35 +322,22 @@ public class LoginUsernamePasswordFragment extends AbstractFragment implements T
         }
     }
 
-    private void saveCredentialsInSmartLock() {
-        SmartLockHelper smartLockHelper = getSmartLockHelper();
-        // mUsername and mPassword are null when the user log in with a magic link
-        if (smartLockHelper != null && mUsername != null && mPassword != null) {
-            smartLockHelper.saveCredentialsInSmartLock(mUsername, mPassword,
-                    HtmlUtils.fastUnescapeHtml(mAccountStore.getAccount().getDisplayName()),
-                    Uri.parse(mAccountStore.getAccount().getAvatarUrl()));
-        }
-    }
-
     private void finishCurrentActivity() {
         if (mIsActivityFinishing) {
             return;
         }
 
+        // Clear persisted text from in the URL field
+        mSiteAddressEditText.setText("");
+
         mIsActivityFinishing = true;
-        saveCredentialsInSmartLock();
         if (getActivity() == null) {
             return;
         }
 
-        mListener.onUsernamePasswordLoginSuccess();
-    }
-
-    private SmartLockHelper getSmartLockHelper() {
-        if (getActivity() != null && getActivity() instanceof SignInActivity) {
-            return ((SignInActivity) getActivity()).getSmartLockHelper();
+        if (mListener != null) {
+            mListener.onUsernamePasswordLoginSuccess();
         }
-        return null;
     }
 
     private void signInAndFetchBlogListWPCom() {
@@ -327,8 +348,9 @@ public class LoginUsernamePasswordFragment extends AbstractFragment implements T
 
     private void signInAndFetchBlogListWPOrg() {
         startProgress(getString(R.string.signing_in));
+        String url = EditTextUtils.getText(mSiteAddressEditText).trim();
         // Self Hosted don't have any "Authentication" request, try to list sites with user/password
-        mDispatcher.dispatch(AuthenticationActionBuilder.newDiscoverEndpointAction(mSiteAddress));
+        mDispatcher.dispatch(AuthenticationActionBuilder.newDiscoverEndpointAction(url));
     }
 
     private boolean checkNetworkConnectivity() {
@@ -346,6 +368,23 @@ public class LoginUsernamePasswordFragment extends AbstractFragment implements T
         return true;
     }
 
+    private boolean checkIfUserIsAlreadyLoggedIn() {
+        if (mAccountStore.hasAccessToken()) {
+            String currentUsername = mAccountStore.getAccount().getUserName();
+            AppLog.e(T.NUX, "User is already logged in WordPress.com: " + currentUsername
+                    + " - but tries to sign in again: " + mUsername);
+            if (getActivity() != null) {
+                if (currentUsername.equals(mUsername)) {
+                    ToastUtils.showToast(getActivity(), R.string.already_logged_in_wpcom_same_username, Duration.LONG);
+                } else {
+                    ToastUtils.showToast(getActivity(), R.string.already_logged_in_wpcom, Duration.LONG);
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
     protected void login() {
         if (!isUserDataValid()) {
             return;
@@ -355,19 +394,39 @@ public class LoginUsernamePasswordFragment extends AbstractFragment implements T
             return;
         }
 
+        mSiteAddress = EditTextUtils.getText(mSiteAddressEditText).trim().toLowerCase();
         mUsername = EditTextUtils.getText(mUsernameEditText).trim().toLowerCase();
         mPassword = EditTextUtils.getText(mPasswordEditText).trim();
 
         if (mSelfHosted) {
             AppLog.i(T.NUX, "User tries to sign in on Self Hosted: " + mSiteAddress
-                            + " with username: " + mUsername);
+                    + " with username: " + mUsername);
             signInAndFetchBlogListWPOrg();
         } else {
             signInAndFetchBlogListWPCom();
         }
     }
 
-    private final OnClickListener mSignInClickListener = new OnClickListener() {
+    /**
+     * Tests the specified string to see if it contains a wpcom subdomain.
+     *
+     * @param string The string to check
+     * @return True if the string contains a wpcom subdomain, else false.
+     */
+    private boolean isWPComDomain(String string) {
+        Matcher matcher = WPCOM_DOMAIN.matcher(string);
+        return matcher.find();
+    }
+
+    private boolean isUsernameEmail() {
+        mUsername = EditTextUtils.getText(mUsernameEditText).trim();
+        Pattern emailRegExPattern = Patterns.EMAIL_ADDRESS;
+        Matcher matcher = emailRegExPattern.matcher(mUsername);
+
+        return matcher.find() && mUsername.length() <= MAX_EMAIL_LENGTH;
+    }
+
+    private final OnClickListener mLoginClickListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
             login();
@@ -391,16 +450,19 @@ public class LoginUsernamePasswordFragment extends AbstractFragment implements T
         }
         mPasswordEditText.setError(null);
         mUsernameEditText.setError(null);
+        mSiteAddressEditText.setError(null);
     }
 
     private boolean fieldsFilled() {
         return EditTextUtils.getText(mUsernameEditText).trim().length() > 0
-               && EditTextUtils.getText(mPasswordEditText).trim().length() > 0;
+                && EditTextUtils.getText(mPasswordEditText).trim().length() > 0
+                && EditTextUtils.getText(mSiteAddressEditText).trim().length() > 0;
     }
 
     protected boolean isUserDataValid() {
         final String username = EditTextUtils.getText(mUsernameEditText).trim();
         final String password = EditTextUtils.getText(mPasswordEditText).trim();
+        final String url = EditTextUtils.getText(mSiteAddressEditText).trim();
         boolean retValue = true;
 
         if (TextUtils.isEmpty(password)) {
@@ -415,6 +477,12 @@ public class LoginUsernamePasswordFragment extends AbstractFragment implements T
             retValue = false;
         }
 
+        if (TextUtils.isEmpty(url)) {
+            mSiteAddressEditText.setError(getString(R.string.required_field));
+            mSiteAddressEditText.requestFocus();
+            retValue = false;
+        }
+
         return retValue;
     }
 
@@ -426,6 +494,11 @@ public class LoginUsernamePasswordFragment extends AbstractFragment implements T
     private void showUsernameError(int messageId) {
         mUsernameEditText.setError(getString(messageId));
         mUsernameEditText.requestFocus();
+    }
+
+    private void showUrlError(int messageId) {
+        mSiteAddressEditText.setError(getString(messageId));
+        mSiteAddressEditText.requestFocus();
     }
 
     protected boolean specificShowError(int messageId) {
@@ -445,18 +518,18 @@ public class LoginUsernamePasswordFragment extends AbstractFragment implements T
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         SignInDialogFragment nuxAlert;
         // create a 3 buttons dialog ("Contact us", "Forget your password?" and "Cancel")
-        nuxAlert = SignInDialogFragment.newInstance(getString(R.string.nux_cannot_log_in),
-                getString(R.string.username_or_password_incorrect),
-                R.drawable.ic_notice_white_64dp, 3, getString(
-                        R.string.cancel), getString(
-                        R.string.forgot_password), getString(
-                        R.string.contact_us), SignInDialogFragment.ACTION_OPEN_URL,
+        nuxAlert = SignInDialogFragment.newInstance(getString(org.wordpress.android.R.string.nux_cannot_log_in),
+                getString(org.wordpress.android.R.string.username_or_password_incorrect),
+                org.wordpress.android.R.drawable.ic_notice_white_64dp, 3, getString(
+                        org.wordpress.android.R.string.cancel), getString(
+                        org.wordpress.android.R.string.forgot_password), getString(
+                        org.wordpress.android.R.string.contact_us), SignInDialogFragment.ACTION_OPEN_URL,
                 SignInDialogFragment.ACTION_OPEN_SUPPORT_CHAT);
 
         // Put entered url and entered username args, that could help our support team
         Bundle bundle = nuxAlert.getArguments();
         bundle.putString(SignInDialogFragment.ARG_OPEN_URL_PARAM, getForgotPasswordURL());
-        bundle.putString(ENTERED_URL_KEY, mSiteAddress);
+        bundle.putString(ENTERED_URL_KEY, EditTextUtils.getText(mSiteAddressEditText));
         bundle.putString(ENTERED_USERNAME_KEY, EditTextUtils.getText(mUsernameEditText));
         bundle.putSerializable(HelpshiftHelper.ORIGIN_KEY, HelpshiftHelper.chooseHelpshiftLoginTag
                 (false, isWPComLogin() && !mSelfHosted));
@@ -493,7 +566,7 @@ public class LoginUsernamePasswordFragment extends AbstractFragment implements T
             faqAction = SignInDialogFragment.ACTION_OPEN_FAQ_PAGE;
             thirdButtonLabel =  getString(R.string.tell_me_more);
         }
-        nuxAlert = SignInDialogFragment.newInstance(getString(R.string.nux_cannot_log_in),
+        nuxAlert = SignInDialogFragment.newInstance(getString(org.wordpress.android.R.string.nux_cannot_log_in),
                 errorMessage, R.drawable.ic_notice_white_64dp, 3,
                 getString(R.string.cancel), getString(R.string.reader_title_applog), thirdButtonLabel,
                 SignInDialogFragment.ACTION_OPEN_SUPPORT_CHAT,
@@ -505,12 +578,6 @@ public class LoginUsernamePasswordFragment extends AbstractFragment implements T
         nuxAlert.setArguments(bundle);
         ft.add(nuxAlert, "alert");
         ft.commitAllowingStateLoss();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(KEY_IS_SELF_HOSTED, mSelfHosted);
     }
 
     @Override
@@ -531,17 +598,6 @@ public class LoginUsernamePasswordFragment extends AbstractFragment implements T
     public void onStop() {
         super.onStop();
         mDispatcher.unregister(this);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == NewUserFragment.NEW_USER && resultCode == Activity.RESULT_OK) {
-            if (data != null) {
-                // Text views will be populated by username/password if these fields are set
-                mUsername = data.getStringExtra("username");
-                mPassword = data.getStringExtra("password");
-            }
-        }
     }
 
     // OnChanged events
@@ -728,6 +784,10 @@ public class LoginUsernamePasswordFragment extends AbstractFragment implements T
                 showGenericErrorDialog(getResources().getString(R.string.no_site_error),
                         NO_SITE_HELPSHIFT_FAQ_ID,
                         NO_SITE_HELPSHIFT_FAQ_SECTION);
+                break;
+            case INVALID_URL:
+                showUrlError(R.string.invalid_site_url_message);
+                AnalyticsTracker.track(Stat.LOGIN_INSERTED_INVALID_URL);
                 break;
             case MISSING_XMLRPC_METHOD:
                 showGenericErrorDialog(getResources().getString(R.string.xmlrpc_missing_method_error),
