@@ -99,7 +99,7 @@ public class ZssEditorTest extends ActivityInstrumentationTestCase2<MockActivity
     }
 
     private class MockJsCallbackReceiver extends JsCallbackReceiver {
-        public MockJsCallbackReceiver(EditorFragmentAbstract editorFragmentAbstract) {
+        public MockJsCallbackReceiver(OnJsEditorStateChangedListener editorFragmentAbstract) {
             super(editorFragmentAbstract);
         }
 

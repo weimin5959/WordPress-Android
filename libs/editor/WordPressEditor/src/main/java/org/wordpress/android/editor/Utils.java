@@ -30,9 +30,9 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 public class Utils {
-    public static String getHtmlFromFile(Activity activity, String filename) {
+    public static String getHtmlFromFile(Context context, String filename) {
         try {
-            AssetManager assetManager = activity.getAssets();
+            AssetManager assetManager = context.getAssets();
             InputStream in = assetManager.open(filename);
             return getStringFromInputStream(in);
         } catch (IOException e) {

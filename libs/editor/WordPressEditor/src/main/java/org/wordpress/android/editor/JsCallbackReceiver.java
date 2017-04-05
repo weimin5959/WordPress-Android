@@ -46,8 +46,8 @@ public class JsCallbackReceiver {
 
     private Set<String> mPreviousStyleSet = new HashSet<>();
 
-    public JsCallbackReceiver(EditorFragmentAbstract editorFragmentAbstract) {
-        mListener = (OnJsEditorStateChangedListener) editorFragmentAbstract;
+    public JsCallbackReceiver(OnJsEditorStateChangedListener listener) {
+        mListener = listener;
     }
 
     @JavascriptInterface

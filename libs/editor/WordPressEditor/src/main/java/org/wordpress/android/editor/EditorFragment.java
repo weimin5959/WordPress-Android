@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -558,15 +559,7 @@ public class EditorFragment extends EditorFragmentAbstract implements View.OnCli
 
         ProfilingUtils.split("EditorFragment.initJsEditor");
 
-        String htmlEditor = Utils.getHtmlFromFile(getActivity(), "android-editor.html");
-        if (htmlEditor != null) {
-            htmlEditor = htmlEditor.replace("%%TITLE%%", getString(R.string.visual_editor));
-            htmlEditor = htmlEditor.replace("%%ANDROID_API_LEVEL%%", String.valueOf(Build.VERSION.SDK_INT));
-            htmlEditor = htmlEditor.replace("%%LOCALIZED_STRING_INIT%%",
-                    "nativeState.localizedStringEdit = '" + getString(R.string.edit) + "';\n" +
-                    "nativeState.localizedStringUploading = '" + getString(R.string.uploading) + "';\n" +
-                    "nativeState.localizedStringUploadingGallery = '" + getString(R.string.uploading_gallery_placeholder) + "';\n");
-        }
+        String htmlEditor = getHtmlEditor(getActivity());
 
         // To avoid reflection security issues with JavascriptInterface on API<17, we use an iframe to make URL requests
         // for callbacks from JS instead. These are received by WebViewClient.shouldOverrideUrlLoading() and then
@@ -582,6 +575,20 @@ public class EditorFragment extends EditorFragmentAbstract implements View.OnCli
         if (mDebugModeEnabled) {
             enableWebDebugging(true);
         }
+    }
+
+    private static String getHtmlEditor(Context context) {
+        String htmlEditor = Utils.getHtmlFromFile(context, "android-editor.html");
+        if (htmlEditor != null) {
+            htmlEditor = htmlEditor.replace("%%TITLE%%", context.getString(R.string.visual_editor));
+            htmlEditor = htmlEditor.replace("%%ANDROID_API_LEVEL%%", String.valueOf(Build.VERSION.SDK_INT));
+            htmlEditor = htmlEditor.replace("%%LOCALIZED_STRING_INIT%%",
+                    "nativeState.localizedStringEdit = '" + context.getString(R.string.edit) + "';\n" +
+                            "nativeState.localizedStringUploading = '" + context.getString(R.string.uploading) + "';\n" +
+                            "nativeState.localizedStringUploadingGallery = '" + context.getString(R.string.uploading_gallery_placeholder) + "';\n");
+        }
+
+        return htmlEditor;
     }
 
     public void checkForFailedUploadAndSwitchToHtmlMode(final ToggleButton toggleButton) {
@@ -1687,5 +1694,149 @@ public class EditorFragment extends EditorFragmentAbstract implements View.OnCli
     @Override
     public void onActionFinished() {
         mActionStartedAt = -1;
+    }
+
+    public static String replaceMediaFileWithUrl(final Context context, @NonNull String postContent,
+                                                 final String localMediaId, final MediaFile mediaFile) {
+        if (mediaFile != null) {
+            final String remoteUrl = Utils.escapeQuotes(mediaFile.getFileURL());
+
+            final EditorWebViewCompatibility webView = new EditorWebViewCompatibility(context, null);
+
+            // TODO probably don't need this
+            webView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+
+            final CountDownLatch contentGetterCountDownLatch = new CountDownLatch(1);
+
+            JsCallbackListenerBridge jsCallbackBridge = new JsCallbackListenerBridge(contentGetterCountDownLatch);
+
+            String htmlEditor = getHtmlEditor(context);
+
+            // To avoid reflection security issues with JavascriptInterface on API<17, we use an iframe to make URL requests
+            // for callbacks from JS instead. These are received by WebViewClient.shouldOverrideUrlLoading() and then
+            // passed on to the JsCallbackReceiver
+            if (Build.VERSION.SDK_INT < 17) {
+                webView.setJsCallbackReceiver(new JsCallbackReceiver(jsCallbackBridge));
+            } else {
+                webView.addJavascriptInterface(new JsCallbackReceiver(jsCallbackBridge), JS_CALLBACK_HANDLER);
+            }
+
+            webView.loadDataWithBaseURL("file:///android_asset/", htmlEditor, "text/html", "utf-8", "");
+
+            webView.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (!mediaFile.isVideo()) {
+                        String remoteMediaId = mediaFile.getMediaId();
+                        webView.execJavaScriptFromString("ZSSEditor.replaceLocalImageWithRemoteImage(" + localMediaId +
+                                ", '" + remoteMediaId + "', '" + remoteUrl + "');");
+                    } else if (mediaFile.isVideo()) {
+                        String posterUrl = Utils.escapeQuotes(StringUtils.notNullStr(mediaFile.getThumbnailURL()));
+                        String videoPressId = ShortcodeUtils.getVideoPressIdFromShortCode(
+                                mediaFile.getVideoPressShortCode());
+                        webView.execJavaScriptFromString("ZSSEditor.replaceLocalVideoWithRemoteVideo(" + localMediaId +
+                                ", '" + remoteUrl + "', '" + posterUrl + "', '" + videoPressId + "');");
+                    }
+
+                    // re-set the post content
+                    webView.execJavaScriptFromString("ZSSEditor.getField('zss_field_content').getHTMLForCallback();");
+                }
+            });
+
+            // wait for JsCallbackBridge to get the data
+            try {
+                contentGetterCountDownLatch.await(1, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                AppLog.e(T.EDITOR, e);
+                Thread.currentThread().interrupt();
+            }
+
+            // now we can try retrieving the data
+            return StringUtils.notNullStr(jsCallbackBridge.getContentHtml());
+        }
+        return postContent;
+    }
+
+    private static class JsCallbackListenerBridge implements OnJsEditorStateChangedListener {
+
+        private CountDownLatch mGetterCountDownLatch;
+        private String mContentHtml;
+
+        public JsCallbackListenerBridge(CountDownLatch countDownLatch) {
+            mGetterCountDownLatch = countDownLatch;
+        }
+
+        @Override
+        public void onDomLoaded() {
+
+        }
+
+        @Override
+        public void onSelectionChanged(Map<String, String> selectionArgs) {
+
+        }
+
+        @Override
+        public void onSelectionStyleChanged(Map<String, Boolean> changeSet) {
+
+        }
+
+        @Override
+        public void onMediaTapped(String mediaId, MediaType mediaType, JSONObject meta, String uploadStatus) {
+
+        }
+
+        @Override
+        public void onLinkTapped(String url, String title) {
+
+        }
+
+        @Override
+        public void onMediaRemoved(String mediaId) {
+
+        }
+
+        @Override
+        public void onMediaReplaced(String mediaId) {
+
+        }
+
+        @Override
+        public void onVideoPressInfoRequested(String videoId) {
+
+        }
+
+        @Override
+        public void onGetHtmlResponse(Map<String, String> inputArgs) {
+            String functionId = inputArgs.get("function");
+
+            if (functionId.isEmpty()) {
+                return;
+            }
+
+            switch (functionId) {
+                case "getHTMLForCallback":
+                    String fieldId = inputArgs.get("id");
+                    String fieldContents = inputArgs.get("contents");
+                    if (!fieldId.isEmpty()) {
+                        switch (fieldId) {
+                            case "zss_field_content":
+                                mContentHtml = fieldContents;
+                                mGetterCountDownLatch.countDown();
+                                break;
+                        }
+                    }
+                    break;
+            }
+        }
+
+        @Override
+        public void onActionFinished() {
+
+        }
+
+        public String getContentHtml() {
+            return mContentHtml;
+        }
     }
 }
