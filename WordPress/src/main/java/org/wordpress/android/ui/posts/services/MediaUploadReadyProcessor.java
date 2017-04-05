@@ -22,7 +22,6 @@ public class MediaUploadReadyProcessor implements MediaUploadReadyListener {
                 AztecEditorFragment.replaceMediaFileWithUrl(WordPress.getContext(), post.getContent(),
                         localMediaId, mediaFile);
             } else if (showNewEditor) {
-                // TODO implement visual editor implementation to update image/video in post
                 EditorFragment.replaceMediaFileWithUrl(WordPress.getContext(), post.getContent(),
                         localMediaId, mediaFile);
             } else {
