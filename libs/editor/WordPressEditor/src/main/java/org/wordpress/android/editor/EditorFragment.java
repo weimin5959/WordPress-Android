@@ -1746,7 +1746,8 @@ public class EditorFragment extends EditorFragmentAbstract implements View.OnCli
 
             // wait for JsCallbackBridge to get the data
             try {
-                contentGetterCountDownLatch.await(2, TimeUnit.SECONDS);
+                //TODO change 10 to 1.
+                contentGetterCountDownLatch.await(10, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 AppLog.e(T.EDITOR, e);
                 Thread.currentThread().interrupt();
@@ -1797,7 +1798,11 @@ public class EditorFragment extends EditorFragmentAbstract implements View.OnCli
                         mWebView.execJavaScriptFromString("ZSSEditor.replaceLocalVideoWithRemoteVideo(" + mLocalMediaId +
                                 ", '" + remoteUrl + "', '" + posterUrl + "', '" + videoPressId + "');");
                     }
+                }
+            });
 
+            mWebView.post(new Runnable() {
+                public void run() {
                     // re-set the post content
                     mWebView.execJavaScriptFromString("ZSSEditor.getField('zss_field_content').getHTMLForCallback();");
                 }
