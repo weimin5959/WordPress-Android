@@ -107,6 +107,10 @@
         </activity>
 
         <activity
+            android:name=".ui.accounts.PostLoginActivity"
+            android:theme="@style/Calypso.NoActionBar" />
+
+        <activity
             android:name=".ui.accounts.NewBlogActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/SignInTheme"

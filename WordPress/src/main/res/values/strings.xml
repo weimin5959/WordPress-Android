@@ -1699,5 +1699,7 @@
     <string name="username_or_email">Username or email</string>
     <string name="log_in">Log In</string>
     <string name="create_wordpress_site">Create WordPress site</string>
+    <string name="connect_more">Connect Another Site</string>
+    <string name="finish">Continue</string>
 
 </resources>

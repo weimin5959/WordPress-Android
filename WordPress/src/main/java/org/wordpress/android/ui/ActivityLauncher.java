@@ -1,17 +1,5 @@
 package org.wordpress.android.ui;
 
-import android.app.Activity;
-import android.content.ActivityNotFoundException;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.text.TextUtils;
-import android.widget.Toast;
-
 import org.wordpress.android.R;
 import org.wordpress.android.WordPress;
 import org.wordpress.android.analytics.AnalyticsTracker;
@@ -20,6 +8,7 @@ import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.networking.SSLCertsViewActivity;
 import org.wordpress.android.ui.accounts.HelpActivity;
 import org.wordpress.android.ui.accounts.NewBlogActivity;
+import org.wordpress.android.ui.accounts.PostLoginActivity;
 import org.wordpress.android.ui.accounts.SignInActivity;
 import org.wordpress.android.ui.comments.CommentsActivity;
 import org.wordpress.android.ui.main.SitePickerActivity;
@@ -54,6 +43,18 @@ import org.wordpress.android.util.UrlUtils;
 import org.wordpress.android.util.WPActivityUtils;
 import org.wordpress.android.util.helpers.MediaGallery;
 import org.wordpress.passcodelock.AppLockManager;
+
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.text.TextUtils;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -269,6 +270,11 @@ public class ActivityLauncher {
     public static void showSignInForResult(Activity activity) {
         Intent intent = new Intent(activity, SignInActivity.class);
         activity.startActivityForResult(intent, RequestCodes.ADD_ACCOUNT);
+    }
+
+    public static void showPostLogin(Activity activity) {
+        Intent intent = new Intent(activity, PostLoginActivity.class);
+        activity.startActivity(intent);
     }
 
     public static void viewStatsSinglePostDetails(Context context, SiteModel site, PostModel post, boolean isPage) {

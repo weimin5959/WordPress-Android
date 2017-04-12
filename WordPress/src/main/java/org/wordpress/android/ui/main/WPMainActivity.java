@@ -1,24 +1,5 @@
 package org.wordpress.android.ui.main;
 
-import android.animation.ObjectAnimator;
-import android.app.DialogFragment;
-import android.app.Fragment;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.RemoteInput;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
-import android.view.View;
-import android.widget.TextView;
-
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.wordpress.android.R;
@@ -70,6 +51,25 @@ import org.wordpress.android.util.ProfilingUtils;
 import org.wordpress.android.util.ToastUtils;
 import org.wordpress.android.util.WPActivityUtils;
 import org.wordpress.android.widgets.WPViewPager;
+
+import android.animation.ObjectAnimator;
+import android.app.DialogFragment;
+import android.app.Fragment;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.RemoteInput;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -232,6 +232,7 @@ public class WPMainActivity extends AppCompatActivity {
                         mViewPager.setCurrentItem(position);
                     }
                     checkMagicLinkSignIn();
+                    ActivityLauncher.showPostLogin(this);
                 }
             } else {
                 ActivityLauncher.showSignInForResult(this);
