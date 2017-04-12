@@ -11,6 +11,8 @@ import org.wordpress.android.analytics.AnalyticsTracker;
 import org.wordpress.android.ui.accounts.HelpActivity;
 import org.wordpress.android.ui.accounts.JetpackCallbacks;
 import org.wordpress.android.util.HelpshiftHelper;
+import org.wordpress.android.util.NetworkUtils;
+import org.wordpress.android.util.ToastUtils;
 import org.wordpress.android.widgets.WPTextView;
 
 import android.app.ProgressDialog;
@@ -18,7 +20,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -130,6 +131,10 @@ public class MagicLinkRequestFragment extends Fragment {
     }
 
     private void sendMagicLinkRequest() {
+        if (!NetworkUtils.isNetworkAvailable(getActivity())) {
+            ToastUtils.showToast(getActivity(), R.string.no_network_message, ToastUtils.Duration.LONG);
+            return;
+        }
         disableRequestEmailButtonAndShowProgressDialog();
 
         Map<String, String> params = new HashMap<>();
@@ -140,9 +145,9 @@ public class MagicLinkRequestFragment extends Fragment {
         WordPress.getRestClientUtilsV1_1().sendLoginEmail(params, new RestRequest.Listener() {
             @Override
             public void onResponse(JSONObject response) {
+                mProgressDialog.cancel();
+                AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_REQUESTED);
                 if (mListener != null) {
-                    mProgressDialog.cancel();
-                    AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_REQUESTED);
                     mListener.onMagicLinkSent();
                 }
             }
@@ -152,7 +157,10 @@ public class MagicLinkRequestFragment extends Fragment {
                 HashMap<String, String> errorProperties = new HashMap<>();
                 errorProperties.put(ERROR_KEY, error.getMessage());
                 AnalyticsTracker.track(AnalyticsTracker.Stat.LOGIN_MAGIC_LINK_FAILED, errorProperties);
-                Snackbar.make(getView(), R.string.magic_link_unavailable_error_message, Snackbar.LENGTH_SHORT);
+                mProgressDialog.cancel();
+                if (isAdded()) {
+                    ToastUtils.showToast(getActivity(), R.string.magic_link_unavailable_error_message, ToastUtils.Duration.LONG);
+                }
                 if (mListener != null) {
                     mListener.onEnterPasswordRequested();
                 }

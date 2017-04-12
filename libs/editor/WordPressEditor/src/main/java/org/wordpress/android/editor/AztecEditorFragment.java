@@ -575,7 +575,7 @@ public class AztecEditorFragment extends EditorFragmentAbstract implements
 
         @Override
         public boolean matches(@NotNull Attributes attrs) {
-            return attrs.getIndex(mAttributeName) > -1 && attrs.getValue("data-wpid").equals(mId);
+            return attrs.getIndex(mAttributeName) > -1 && attrs.getValue(mAttributeName).equals(mId);
         }
     }
 
@@ -1005,7 +1005,7 @@ public class AztecEditorFragment extends EditorFragmentAbstract implements
                 // Display 'cancel upload' dialog
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle(getString(R.string.stop_upload_dialog_title));
-                builder.setPositiveButton(R.string.stop_upload_button, new DialogInterface.OnClickListener() {
+                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         mEditorFragmentListener.onMediaUploadCancelClicked(localMediaId, true);
 

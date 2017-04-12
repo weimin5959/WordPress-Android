@@ -205,7 +205,9 @@ public class PostsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             PostViewHolder postHolder = (PostViewHolder) holder;
 
             if (StringUtils.isNotEmpty(post.getTitle())) {
-                postHolder.txtTitle.setText(post.getTitle());
+                // Unescape HTML
+                String cleanPostTitle = StringEscapeUtils.unescapeHtml4(post.getTitle());
+                postHolder.txtTitle.setText(cleanPostTitle);
             } else {
                 postHolder.txtTitle.setText("(" + context.getResources().getText(R.string.untitled) + ")");
             }
@@ -448,6 +450,10 @@ public class PostsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             holder.btnTrash.setVisibility(View.VISIBLE);
             holder.btnStats.setVisibility(canShowStatsButton ? View.VISIBLE : View.GONE);
             holder.btnPublish.setVisibility(canShowPublishButton ? View.VISIBLE : View.GONE);
+            if (!mSite.getHasCapabilityPublishPosts()) {
+                // Users with roles that lack permission to publish show Submit
+                holder.btnPublish.setButtonType(PostListButton.BUTTON_SUBMIT);
+            }
         } else {
             holder.btnMore.setVisibility(View.VISIBLE);
             holder.btnBack.setVisibility(View.GONE);
@@ -654,12 +660,15 @@ public class PostsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
      * called after the media (featured image) for a post has been downloaded - locate the post
      * and set its featured image url to the passed url
      */
-    public void mediaUpdated(long mediaId, String mediaUrl) {
-        int position = PostUtils.indexOfFeaturedMediaIdInList(mediaId, mPosts);
-        if (isValidPostPosition(position)) {
-            int postId = mPosts.get(position).getId();
-            mFeaturedImageUrls.put(postId, mediaUrl);
-            notifyItemChanged(position);
+    public void mediaChanged(MediaModel mediaModel) {
+        // Multiple posts could have the same featured image
+        List<Integer> indexList = PostUtils.indexesOfFeaturedMediaIdInList(mediaModel.getMediaId(), mPosts);
+        for (int position : indexList) {
+            PostModel post = getItem(position);
+            if (post != null) {
+                mFeaturedImageUrls.put(post.getId(), mediaModel.getUrl());
+                notifyItemChanged(position);
+            }
         }
     }
 
@@ -722,6 +731,9 @@ public class PostsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     MediaModel media = mMediaStore.getSiteMediaWithId(mSite, post.getFeaturedImageId());
                     if (media != null) {
                         imageUrl = media.getUrl();
+                    } else {
+                        // Reset the current `imageUrl` so it doesn't contain the previous post's image
+                        imageUrl = null;
                     }
                     // If the imageUrl isn't found it means the featured image info hasn't been added to
                     // the local media library yet, so add to the list of media IDs to request info for
