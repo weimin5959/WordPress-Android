@@ -157,6 +157,7 @@
     <dimen name="nux_edit_field_font_size">16sp</dimen>
     <dimen name="nux_main_button_height">48dp</dimen>
     <dimen name="nux_secondary_button_height">36dp</dimen>
+    <dimen name="nux_promo_font_size">22sp</dimen>
 
     <dimen name="nux_width">600dp</dimen>
 
@@ -295,4 +296,8 @@
     <dimen name="photo_picker_selected_item_padding">4dp</dimen>
     <dimen name="photo_picker_icon">48dp</dimen>
     <dimen name="photo_picker_video_overlay">36dp</dimen>
+
+    <!-- login -->
+    <dimen name="promo_indicator_bullet_size">4dp</dimen>
+
 </resources>

@@ -1,27 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:background="@color/blue_wordpress"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/image_view"
+    <org.wordpress.android.widgets.WPViewPager
+        android:id="@+id/intros_pager"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentTop="true"
-        android:layout_above="@+id/login_button"
-        android:scaleType="fitCenter"
-        android:src="@drawable/reader" />
-    <Button
-        android:id="@id/login_button"
-        style="@style/WordPress.NUXPrimaryButton"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottom_buttons"
+        android:clipToPadding="false"/>
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tab_layout_indicator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/create_site_button"
-        android:text="@string/log_in"/>
-    <Button
-        android:id="@+id/create_site_button"
-        style="@style/WordPress.NUXPrimaryButton"
+        android:layout_marginTop="@dimen/margin_medium"
+        app:tabBackground="@drawable/indicator_selector"
+        app:tabGravity="center"
+        app:tabIndicatorHeight="0dp" />
+
+    <LinearLayout
+        android:id="@+id/bottom_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:text="@string/create_wordpress_site"/>
+        android:background="@color/grey_lighten_30"
+        android:padding="@dimen/margin_extra_large"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/login_button"
+            android:theme="@style/WordPress.BlueButton"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="@string/log_in"/>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/create_site_button"
+            android:theme="@style/WordPress.WhiteButton"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="@dimen/margin_large"
+            android:text="@string/create_wordpress_site"/>
+    </LinearLayout>
 </RelativeLayout>

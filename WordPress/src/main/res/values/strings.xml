@@ -1701,5 +1701,10 @@
     <string name="create_wordpress_site">Create WordPress site</string>
     <string name="connect_more">Connect Another Site</string>
     <string name="finish">Continue</string>
+    <string name="login_promo_text_onthego">Publish from the park. Blog from the bus. Comment from the café. WordPress goes where you go.</string>
+    <string name="login_promo_text_realtime">Watch readers from around the world read and interact with your site - in realtime.</string>
+    <string name="login_promo_text_anytime">Catch up with your favorite sites and join the conversation anywhere, any time.</string>
+    <string name="login_promo_text_notifications">Your notifications travel with you - see comments and likes as they happen.</string>
+    <string name="login_promo_text_jetpack">Manage your Jetpack-powered site on the go - you\'ve got WordPress in your pocket.</string>
 
 </resources>
