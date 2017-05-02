@@ -139,6 +139,7 @@
     <string name="media_error_no_permission_upload">You don\'t have permission to upload media to the site</string>
     <string name="media_error_too_large_upload">The file is too big. Please contact the web hosting provider to fix this issue</string>
     <string name="access_media_permission_required">Permissions required in order to access media</string>
+    <string name="access_camera_permission_required">Permissions required in order to access camera</string>
     <string name="add_media_permission_required">Permissions required in order to add media</string>
     <string name="media_fetching">Fetching media…</string>
     <string name="media_file_type">File type: %s</string>

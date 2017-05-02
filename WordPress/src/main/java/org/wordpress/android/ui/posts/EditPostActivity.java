@@ -552,7 +552,7 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
      * user has requested to show the photo picker
      */
     void showPhotoPicker() {
-        // request permissions if we don't already have them
+        // request storage permissions if we don't already have it - required in order to show the picker
         if (!PermissionUtils.checkAndRequestStoragePermission(this, PHOTO_PICKER_STORAGE_PERMISSION_REQUEST_CODE)) {
             return;
         }

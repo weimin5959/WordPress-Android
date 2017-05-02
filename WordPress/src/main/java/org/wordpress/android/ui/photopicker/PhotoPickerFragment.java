@@ -34,6 +34,8 @@ import java.util.List;
 public class PhotoPickerFragment extends Fragment {
 
     static final int NUM_COLUMNS = 3;
+
+    // TODO: these permission request codes should be defined in a single place
     static final int PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE = 5;
 
     public enum PhotoPickerIcon {
@@ -139,7 +141,7 @@ public class PhotoPickerFragment extends Fragment {
         mCameraIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onCameraIconClicked();
+                doCameraIconClicked();
             }
         });
         mBottomBar.findViewById(R.id.icon_picker).setOnClickListener(new View.OnClickListener() {
@@ -175,8 +177,8 @@ public class PhotoPickerFragment extends Fragment {
         return view;
     }
 
-    private void onCameraIconClicked() {
-        if (!PermissionUtils.checkAndRequestCameraPermission(this, PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE)) {
+    private void doCameraIconClicked() {
+        if (!PermissionUtils.checkAndRequestCameraAndStoragePermissions(this, PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE)) {
             return;
         }
 
@@ -211,9 +213,10 @@ public class PhotoPickerFragment extends Fragment {
                     }
                 }
                 if (canAccessCamera) {
-                    onCameraIconClicked();
+                    doCameraIconClicked();
                 } else {
-                    ToastUtils.showToast(getActivity(), getString(R.string.access_media_permission_required));
+                    // TODO: these permission toasts should be friendlier
+                    ToastUtils.showToast(getActivity(), getString(R.string.access_camera_permission_required));
                 }
                 break;
         }
