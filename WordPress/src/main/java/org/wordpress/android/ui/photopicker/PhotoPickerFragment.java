@@ -1,6 +1,8 @@
 package org.wordpress.android.ui.photopicker;
 
+import android.Manifest;
 import android.app.Fragment;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -22,6 +24,8 @@ import org.wordpress.android.R;
 import org.wordpress.android.ui.photopicker.PhotoPickerAdapter.PhotoPickerAdapterListener;
 import org.wordpress.android.util.AniUtils;
 import org.wordpress.android.util.AppLog;
+import org.wordpress.android.util.PermissionUtils;
+import org.wordpress.android.util.ToastUtils;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -30,6 +34,7 @@ import java.util.List;
 public class PhotoPickerFragment extends Fragment {
 
     static final int NUM_COLUMNS = 3;
+    static final int PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE = 5;
 
     public enum PhotoPickerIcon {
         ANDROID_CHOOSE_PHOTO,
@@ -56,6 +61,8 @@ public class PhotoPickerFragment extends Fragment {
     private RecyclerView mRecycler;
     private PhotoPickerAdapter mAdapter;
     private View mBottomBar;
+    private View mCameraIcon;
+
     private ActionMode mActionMode;
     private GridLayoutManager mGridManager;
     private Parcelable mRestoreState;
@@ -127,16 +134,12 @@ public class PhotoPickerFragment extends Fragment {
         mRecycler.setHasFixedSize(true);
 
         mBottomBar = view.findViewById(R.id.bottom_bar);
-        mBottomBar.findViewById(R.id.icon_camera).setOnClickListener(new View.OnClickListener() {
+
+        mCameraIcon = mBottomBar.findViewById(R.id.icon_camera);
+        mCameraIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mPhotosOnly) {
-                    if (mListener != null) {
-                        mListener.onPhotoPickerIconClicked(PhotoPickerIcon.ANDROID_CAPTURE_PHOTO);
-                    }
-                } else {
-                    showCameraPopupMenu(v);
-                }
+                onCameraIconClicked();
             }
         });
         mBottomBar.findViewById(R.id.icon_picker).setOnClickListener(new View.OnClickListener() {
@@ -170,6 +173,50 @@ public class PhotoPickerFragment extends Fragment {
         reload();
 
         return view;
+    }
+
+    private void onCameraIconClicked() {
+        if (!PermissionUtils.checkAndRequestCameraPermission(this, PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE)) {
+            return;
+        }
+
+        if (mPhotosOnly) {
+            if (mListener != null) {
+                mListener.onPhotoPickerIconClicked(PhotoPickerIcon.ANDROID_CHOOSE_PHOTO);
+            }
+        } else {
+            showPickerPopupMenu(mCameraIcon);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE:
+                boolean canAccessCamera = true;
+                for (int i = 0; i < grantResults.length; ++i) {
+                    switch (permissions[i]) {
+                        case Manifest.permission.CAMERA:
+                            if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                                canAccessCamera = false;
+                            }
+                            break;
+                        case Manifest.permission.WRITE_EXTERNAL_STORAGE:
+                            if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                                canAccessCamera = false;
+                            }
+                            break;
+                    }
+                }
+                if (canAccessCamera) {
+                    onCameraIconClicked();
+                } else {
+                    ToastUtils.showToast(getActivity(), getString(R.string.access_media_permission_required));
+                }
+                break;
+        }
     }
 
     private void showPickerPopupMenu(@NonNull View view) {

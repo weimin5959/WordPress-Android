@@ -103,6 +103,12 @@ public class PermissionUtils {
         });
     }
 
+    public static boolean checkAndRequestCameraPermission(Fragment fragment, int requestCode) {
+        return checkAndRequestPermissions(fragment, requestCode, new String[]{
+                permission.CAMERA
+        });
+    }
+
     public static boolean checkLocationPermissions(Activity activity, int requestCode) {
         return checkAndRequestPermissions(activity, requestCode, new String[]{
                 permission.ACCESS_FINE_LOCATION,
