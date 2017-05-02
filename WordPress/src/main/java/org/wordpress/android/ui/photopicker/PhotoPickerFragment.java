@@ -34,8 +34,6 @@ import java.util.List;
 public class PhotoPickerFragment extends Fragment {
 
     static final int NUM_COLUMNS = 3;
-
-    // TODO: these permission request codes should be defined in a single place
     static final int PHOTO_PICKER_CAMERA_PERMISSION_REQUEST_CODE = 5;
 
     public enum PhotoPickerIcon {
