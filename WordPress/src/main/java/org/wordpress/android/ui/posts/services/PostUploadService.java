@@ -69,6 +69,7 @@ import de.greenrobot.event.EventBus;
 
 public class PostUploadService extends Service {
     private static final ArrayList<PostModel> mPostsList = new ArrayList<>();
+    private static final ArrayList<PostModel> mDeletedPostsList = new ArrayList<>();
     private static PostModel mCurrentUploadingPost = null;
     private static Map<String, Object> mCurrentUploadingPostAnalyticsProperties;
     private static boolean mUseLegacyMode;
@@ -132,6 +133,22 @@ public class PostUploadService extends Service {
         return false;
     }
 
+    public static boolean isPostUploadingRightNow(PostModel post) {
+        AppLog.d(T.POSTS, "Current uploading post: " + mCurrentUploadingPost);
+        return mCurrentUploadingPost != null && mCurrentUploadingPost.getId() == post.getId();
+    }
+
+    public static void cancelPostUpload(PostModel post) {
+        Iterator<PostModel> iterator = mPostsList.iterator();
+        while (iterator.hasNext()) {
+            PostModel postModel = iterator.next();
+            if (postModel.getId() == post.getId()) {
+                iterator.remove();
+                mDeletedPostsList.add(postModel);
+            }
+        }
+    }
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -161,6 +178,12 @@ public class PostUploadService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         synchronized (mPostsList) {
             if (mPostsList.size() == 0 || mContext == null) {
+                if (!mDeletedPostsList.isEmpty()) {
+                    for (PostModel post : mDeletedPostsList) {
+                        mPostUploadNotifier.cancelNotification(post);
+                    }
+                    mDeletedPostsList.clear();
+                }
                 stopSelf();
                 return START_NOT_STICKY;
             }
@@ -174,6 +197,13 @@ public class PostUploadService extends Service {
 
     private void uploadNextPost() {
         synchronized (mPostsList) {
+            if (!mDeletedPostsList.isEmpty()) {
+                for (PostModel post : mDeletedPostsList) {
+                    mPostUploadNotifier.cancelNotification(post);
+                }
+                mDeletedPostsList.clear();
+            }
+
             if (mCurrentTask == null) { //make sure nothing is running
                 mCurrentUploadingPost = null;
                 mCurrentUploadingPostAnalyticsProperties = null;

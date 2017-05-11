@@ -243,7 +243,7 @@ public class PostsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 postHolder.btnTrash.setButtonType(PostListButton.BUTTON_TRASH);
             }
 
-            if (PostUploadService.isPostUploading(post)) {
+            if (PostUploadService.isPostUploadingRightNow(post)) {
                 postHolder.disabledOverlay.setVisibility(View.VISIBLE);
             } else {
                 postHolder.disabledOverlay.setVisibility(View.GONE);

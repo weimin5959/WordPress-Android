@@ -30,6 +30,7 @@ import org.wordpress.android.fluxc.model.PostModel;
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.model.post.PostStatus;
 import org.wordpress.android.fluxc.store.MediaStore;
+import org.wordpress.android.fluxc.store.MediaStore.OnMediaUploaded;
 import org.wordpress.android.fluxc.store.PostStore;
 import org.wordpress.android.fluxc.store.PostStore.FetchPostsPayload;
 import org.wordpress.android.fluxc.store.PostStore.OnPostChanged;
@@ -483,6 +484,9 @@ public class PostsListFragment extends Fragment
 
         switch (buttonType) {
             case PostListButton.BUTTON_EDIT:
+                if (PostUploadService.isPostUploading(post)) {
+                    PostUploadService.cancelPostUpload(post);
+                }
                 ActivityLauncher.editPostOrPageForResult(getActivity(), mSite, post);
                 break;
             case PostListButton.BUTTON_SUBMIT:
@@ -673,6 +677,17 @@ public class PostsListFragment extends Fragment
             if (event.mediaList != null && event.mediaList.size() > 0) {
                 MediaModel mediaModel = event.mediaList.get(0);
                 mPostsListAdapter.mediaChanged(mediaModel);
+            }
+        }
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMediaUploaded(OnMediaUploaded event) {
+        if (event.media != null) {
+            PostModel post = mPostStore.getPostByLocalPostId(event.media.getLocalPostId());
+            if (post != null && PostUploadService.isPostUploading(post)) {
+                loadPosts(LoadMode.FORCED);
             }
         }
     }
