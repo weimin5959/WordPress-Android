@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
@@ -65,6 +66,10 @@ public class PostUploadNotifier {
         notificationData.notificationId = notificationId;
         mPostIdToNotificationData.put(post.getId(), notificationData);
         mService.startForeground(notificationId, mNotificationBuilder.build());
+    }
+
+    public boolean isDisplayingNotificationForPost(@NonNull PostModel post) {
+        return mPostIdToNotificationData.get(post.getId()) != null;
     }
 
     public void updateNotificationIcon(PostModel post, Bitmap icon) {
