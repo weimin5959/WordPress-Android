@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
@@ -21,6 +20,7 @@ import org.wordpress.android.WordPress;
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.store.AccountStore;
 import org.wordpress.android.fluxc.store.SiteStore;
+import org.wordpress.android.ui.UploadStatusBarActivity;
 import org.wordpress.android.util.AppLog;
 import org.wordpress.android.util.FluxCUtils;
 import org.wordpress.android.util.SiteUtils;
@@ -28,7 +28,7 @@ import org.wordpress.android.util.ToastUtils;
 
 import javax.inject.Inject;
 
-public class StatsWidgetConfigureActivity extends AppCompatActivity
+public class StatsWidgetConfigureActivity extends UploadStatusBarActivity
         implements StatsWidgetConfigureAdapter.OnSiteClickListener {
 
     private StatsWidgetConfigureAdapter mAdapter;

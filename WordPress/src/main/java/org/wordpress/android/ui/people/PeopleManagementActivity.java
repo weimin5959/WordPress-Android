@@ -7,7 +7,6 @@ import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
@@ -19,6 +18,7 @@ import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.store.AccountStore;
 import org.wordpress.android.models.PeopleListFilter;
 import org.wordpress.android.models.Person;
+import org.wordpress.android.ui.UploadStatusBarActivity;
 import org.wordpress.android.ui.people.utils.PeopleUtils;
 import org.wordpress.android.util.AnalyticsUtils;
 import org.wordpress.android.util.NetworkUtils;
@@ -31,7 +31,7 @@ import javax.inject.Inject;
 import de.greenrobot.event.EventBus;
 
 
-public class PeopleManagementActivity extends AppCompatActivity
+public class PeopleManagementActivity extends UploadStatusBarActivity
         implements PeopleListFragment.OnPersonSelectedListener, PeopleListFragment.OnFetchPeopleListener {
     private static final String KEY_PEOPLE_LIST_FRAGMENT = "people-list-fragment";
     private static final String KEY_PERSON_DETAIL_FRAGMENT = "person-detail-fragment";

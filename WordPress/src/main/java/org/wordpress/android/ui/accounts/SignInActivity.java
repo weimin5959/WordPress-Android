@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 
 import com.google.android.gms.auth.api.credentials.Credential;
@@ -23,6 +22,7 @@ import org.wordpress.android.analytics.AnalyticsTracker;
 import org.wordpress.android.analytics.AnalyticsTracker.Stat;
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.store.SiteStore;
+import org.wordpress.android.ui.UploadStatusBarActivity;
 import org.wordpress.android.ui.ActivityId;
 import org.wordpress.android.ui.accounts.SmartLockHelper.Callback;
 import org.wordpress.android.ui.accounts.login.MagicLinkRequestFragment;
@@ -32,7 +32,7 @@ import org.wordpress.android.util.AppLog.T;
 
 import javax.inject.Inject;
 
-public class SignInActivity extends AppCompatActivity implements ConnectionCallbacks, OnConnectionFailedListener,
+public class SignInActivity extends UploadStatusBarActivity implements ConnectionCallbacks, OnConnectionFailedListener,
         MagicLinkRequestFragment.OnMagicLinkFragmentInteraction, JetpackCallbacks,
         SignInFragment.OnMagicLinkRequestInteraction, MagicLinkSentFragment.OnMagicLinkSentInteraction {
     public static final int SIGN_IN_REQUEST = 1;

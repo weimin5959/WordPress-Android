@@ -4,7 +4,6 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +14,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelSlideListener;
 import org.wordpress.android.R;
 import org.wordpress.android.WordPress;
 import org.wordpress.android.fluxc.model.SiteModel;
+import org.wordpress.android.ui.UploadStatusBarActivity;
 import org.wordpress.android.ui.ActivityLauncher;
 import org.wordpress.android.ui.media.MediaGallerySettingsFragment.MediaGallerySettingsCallback;
 import org.wordpress.android.util.DisplayUtils;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 /**
  * An activity where the user can manage a media gallery
  */
-public class MediaGalleryActivity extends AppCompatActivity implements MediaGallerySettingsCallback {
+public class MediaGalleryActivity extends UploadStatusBarActivity implements MediaGallerySettingsCallback {
     public static final int REQUEST_CODE = 3000;
 
     // params for the gallery

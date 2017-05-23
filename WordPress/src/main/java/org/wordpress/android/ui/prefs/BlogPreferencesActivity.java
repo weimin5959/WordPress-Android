@@ -4,7 +4,6 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -17,6 +16,7 @@ import org.wordpress.android.fluxc.store.AccountStore;
 import org.wordpress.android.fluxc.store.SiteStore;
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteDeleted;
 import org.wordpress.android.networking.ConnectionChangeReceiver;
+import org.wordpress.android.ui.UploadStatusBarActivity;
 import org.wordpress.android.util.SiteUtils;
 import org.wordpress.android.util.StringUtils;
 import org.wordpress.android.util.ToastUtils;
@@ -28,7 +28,7 @@ import de.greenrobot.event.EventBus;
 /**
  * Activity for configuring blog specific settings.
  */
-public class BlogPreferencesActivity extends AppCompatActivity {
+public class BlogPreferencesActivity extends UploadStatusBarActivity {
     public static final int RESULT_BLOG_REMOVED = RESULT_FIRST_USER;
 
     private static final String KEY_SETTINGS_FRAGMENT = "settings-fragment";

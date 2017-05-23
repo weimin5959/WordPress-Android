@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
@@ -32,6 +31,7 @@ import org.wordpress.android.fluxc.store.CommentStore.OnCommentChanged;
 import org.wordpress.android.fluxc.store.CommentStore.RemoteCommentPayload;
 import org.wordpress.android.fluxc.store.SiteStore;
 import org.wordpress.android.models.Note;
+import org.wordpress.android.ui.UploadStatusBarActivity;
 import org.wordpress.android.ui.ActivityId;
 import org.wordpress.android.util.AppLog;
 import org.wordpress.android.util.AppLog.T;
@@ -41,7 +41,7 @@ import org.wordpress.android.util.ToastUtils;
 
 import javax.inject.Inject;
 
-public class EditCommentActivity extends AppCompatActivity {
+public class EditCommentActivity extends UploadStatusBarActivity {
     static final String KEY_COMMENT = "KEY_COMMENT";
     static final String KEY_NOTE_ID = "KEY_NOTE_ID";
 

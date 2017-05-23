@@ -3,19 +3,19 @@ package org.wordpress.android.ui.prefs.notifications;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import org.wordpress.android.R;
+import org.wordpress.android.ui.UploadStatusBarActivity;
 import org.wordpress.android.ui.notifications.NotificationEvents;
 
 import de.greenrobot.event.EventBus;
 
 // Simple wrapper activity for NotificationsSettingsFragment
-public class NotificationsSettingsActivity extends AppCompatActivity {
+public class NotificationsSettingsActivity extends UploadStatusBarActivity {
     private View mMessageContainer;
     private TextView mMessageTextView;
 

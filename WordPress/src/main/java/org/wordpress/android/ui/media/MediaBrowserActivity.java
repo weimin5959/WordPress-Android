@@ -14,7 +14,6 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -23,7 +22,6 @@ import android.support.annotation.StringRes;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.MenuItemCompat.OnActionExpandListener;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.support.v7.widget.Toolbar;
@@ -56,6 +54,7 @@ import org.wordpress.android.fluxc.store.MediaStore.OnMediaChanged;
 import org.wordpress.android.fluxc.store.MediaStore.OnMediaListFetched;
 import org.wordpress.android.fluxc.store.MediaStore.OnMediaUploaded;
 import org.wordpress.android.models.MediaUploadState;
+import org.wordpress.android.ui.UploadStatusBarActivity;
 import org.wordpress.android.ui.ActivityId;
 import org.wordpress.android.ui.RequestCodes;
 import org.wordpress.android.ui.media.MediaGridFragment.MediaGridListener;
@@ -87,7 +86,7 @@ import javax.inject.Inject;
 /**
  * The main activity in which the user can browse their media.
  */
-public class MediaBrowserActivity extends AppCompatActivity implements MediaGridListener,
+public class MediaBrowserActivity extends UploadStatusBarActivity implements MediaGridListener,
         OnQueryTextListener, OnActionExpandListener,
         WordPressMediaUtils.LaunchCameraCallback {
     private static final int MEDIA_PERMISSION_REQUEST_CODE = 1;

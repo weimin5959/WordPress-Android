@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -28,6 +27,7 @@ import org.wordpress.android.WordPress;
 import org.wordpress.android.analytics.AnalyticsTracker;
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.models.Theme;
+import org.wordpress.android.ui.UploadStatusBarActivity;
 import org.wordpress.android.ui.ActivityId;
 import org.wordpress.android.ui.themes.ThemeBrowserFragment.ThemeBrowserFragmentCallback;
 import org.wordpress.android.util.AnalyticsUtils;
@@ -44,7 +44,7 @@ import java.util.Map;
 /**
  * The theme browser.
  */
-public class ThemeBrowserActivity extends AppCompatActivity implements ThemeBrowserFragmentCallback {
+public class ThemeBrowserActivity extends UploadStatusBarActivity implements ThemeBrowserFragmentCallback {
     public static final int THEME_FETCH_MAX = 100;
     public static final int ACTIVATE_THEME = 1;
     public static final String THEME_ID = "theme_id";

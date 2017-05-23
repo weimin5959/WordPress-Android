@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,13 +15,14 @@ import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.model.TermModel;
 import org.wordpress.android.fluxc.store.TaxonomyStore;
 import org.wordpress.android.models.CategoryNode;
+import org.wordpress.android.ui.UploadStatusBarActivity;
 import org.wordpress.android.util.ToastUtils;
 
 import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-public class AddCategoryActivity extends AppCompatActivity {
+public class AddCategoryActivity extends UploadStatusBarActivity {
     public static final String KEY_CATEGORY = "KEY_CATEGORY";
 
     private SiteModel mSite;

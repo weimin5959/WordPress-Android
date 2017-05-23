@@ -9,13 +9,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
 import org.wordpress.android.BuildConfig;
 import org.wordpress.android.R;
+import org.wordpress.android.ui.UploadStatusBarActivity;
 import org.wordpress.android.ui.RequestCodes;
 import org.wordpress.android.ui.media.WordPressMediaUtils;
 import org.wordpress.android.ui.photopicker.PhotoPickerFragment.PhotoPickerOption;
@@ -26,7 +26,7 @@ import java.io.File;
 import java.util.EnumSet;
 import java.util.List;
 
-public class PhotoPickerActivity extends AppCompatActivity
+public class PhotoPickerActivity extends UploadStatusBarActivity
         implements PhotoPickerFragment.PhotoPickerListener {
 
     private static final String PICKER_FRAGMENT_TAG = "picker_fragment_tag";

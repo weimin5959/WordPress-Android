@@ -1,7 +1,6 @@
 package org.wordpress.android.ui.prefs;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -9,12 +8,13 @@ import android.view.View.OnClickListener;
 import org.wordpress.android.Constants;
 import org.wordpress.android.R;
 import org.wordpress.android.WordPress;
+import org.wordpress.android.ui.UploadStatusBarActivity;
 import org.wordpress.android.ui.ActivityLauncher;
 import org.wordpress.android.widgets.WPTextView;
 
 import java.util.Calendar;
 
-public class AboutActivity extends AppCompatActivity implements OnClickListener {
+public class AboutActivity extends UploadStatusBarActivity implements OnClickListener {
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);

@@ -3,7 +3,6 @@ package org.wordpress.android.ui;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 
 import org.wordpress.android.R;
 import org.wordpress.android.WordPress;
@@ -13,7 +12,7 @@ import org.wordpress.android.util.AppLog.T;
 import org.wordpress.android.util.ProfilingUtils;
 import org.wordpress.android.util.ToastUtils;
 
-public class WPLaunchActivity extends AppCompatActivity {
+public class WPLaunchActivity extends UploadStatusBarActivity {
     /*
      * this the main (default) activity, which does nothing more than launch the
      * previously active activity on startup - note that it's defined in the

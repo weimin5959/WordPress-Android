@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.ActionMode;
@@ -26,6 +25,7 @@ import org.wordpress.android.fluxc.store.MediaStore;
 import org.wordpress.android.fluxc.store.MediaStore.FetchMediaListPayload;
 import org.wordpress.android.fluxc.store.MediaStore.OnMediaListFetched;
 import org.wordpress.android.fluxc.tools.FluxCImageLoader;
+import org.wordpress.android.ui.UploadStatusBarActivity;
 import org.wordpress.android.util.ListUtils;
 import org.wordpress.android.util.ToastUtils;
 
@@ -38,7 +38,7 @@ import javax.inject.Inject;
  * An activity where the user can add new images to their media gallery or where the user
  * can choose a single image to embed into their post.
  */
-public class MediaGalleryPickerActivity extends AppCompatActivity
+public class MediaGalleryPickerActivity extends UploadStatusBarActivity
         implements MediaGridAdapter.MediaGridAdapterCallback {
 
     public static final int REQUEST_CODE = 4000;

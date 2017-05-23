@@ -3,7 +3,6 @@ package org.wordpress.android.ui.posts;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.util.LongSparseArray;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
@@ -27,6 +26,7 @@ import org.wordpress.android.fluxc.store.TaxonomyStore.OnTaxonomyChanged;
 import org.wordpress.android.fluxc.store.TaxonomyStore.OnTermUploaded;
 import org.wordpress.android.fluxc.store.TaxonomyStore.RemoteTermPayload;
 import org.wordpress.android.models.CategoryNode;
+import org.wordpress.android.ui.UploadStatusBarActivity;
 import org.wordpress.android.util.NetworkUtils;
 import org.wordpress.android.util.ToastUtils;
 import org.wordpress.android.util.ToastUtils.Duration;
@@ -41,7 +41,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class SelectCategoriesActivity extends AppCompatActivity {
+public class SelectCategoriesActivity extends UploadStatusBarActivity {
     private static final int ACTIVITY_REQUEST_CODE_ADD_CATEGORY = 0;
 
     public static final String KEY_POST = "KEY_POST";

@@ -3,7 +3,6 @@ package org.wordpress.android.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
 import org.wordpress.android.R;
@@ -26,7 +25,7 @@ import javax.inject.Inject;
  *
  * Redirects users to the reader activity along with IDs passed in the intent
  */
-public class DeepLinkingIntentReceiverActivity extends AppCompatActivity {
+public class DeepLinkingIntentReceiverActivity extends UploadStatusBarActivity {
     private static final int INTENT_WELCOME = 0;
 
     private String mInterceptedUri;

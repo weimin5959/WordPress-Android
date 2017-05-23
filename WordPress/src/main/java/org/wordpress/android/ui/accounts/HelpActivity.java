@@ -3,7 +3,6 @@ package org.wordpress.android.ui.accounts;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -12,6 +11,7 @@ import org.wordpress.android.R;
 import org.wordpress.android.WordPress;
 import org.wordpress.android.fluxc.store.AccountStore;
 import org.wordpress.android.fluxc.store.SiteStore;
+import org.wordpress.android.ui.UploadStatusBarActivity;
 import org.wordpress.android.ui.ActivityId;
 import org.wordpress.android.ui.AppLogViewerActivity;
 import org.wordpress.android.util.HelpshiftHelper;
@@ -21,7 +21,7 @@ import org.wordpress.android.widgets.WPTextView;
 
 import javax.inject.Inject;
 
-public class HelpActivity extends AppCompatActivity {
+public class HelpActivity extends UploadStatusBarActivity {
     @Inject AccountStore mAccountStore;
     @Inject SiteStore mSiteStore;
 

@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -30,6 +29,7 @@ import org.wordpress.android.R;
 import org.wordpress.android.WordPress;
 import org.wordpress.android.analytics.AnalyticsTracker;
 import org.wordpress.android.networking.RestClientUtils;
+import org.wordpress.android.ui.UploadStatusBarActivity;
 import org.wordpress.android.ui.ActivityId;
 import org.wordpress.android.ui.stats.models.PostViewsModel;
 import org.wordpress.android.ui.stats.models.VisitModel;
@@ -51,7 +51,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 /**
  *  Single item details activity.
  */
-public class StatsSingleItemDetailsActivity extends AppCompatActivity
+public class StatsSingleItemDetailsActivity extends UploadStatusBarActivity
         implements StatsBarGraph.OnGestureListener{
 
     public static final String ARG_REMOTE_BLOG_ID = "ARG_REMOTE_BLOG_ID";

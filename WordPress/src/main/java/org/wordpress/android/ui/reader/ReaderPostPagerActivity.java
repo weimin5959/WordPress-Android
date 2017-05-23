@@ -11,7 +11,6 @@ import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.SparseArray;
@@ -27,6 +26,7 @@ import org.wordpress.android.datasets.ReaderPostTable;
 import org.wordpress.android.fluxc.store.SiteStore;
 import org.wordpress.android.models.ReaderPost;
 import org.wordpress.android.models.ReaderTag;
+import org.wordpress.android.ui.UploadStatusBarActivity;
 import org.wordpress.android.ui.ActivityLauncher;
 import org.wordpress.android.ui.RequestCodes;
 import org.wordpress.android.ui.WPLaunchActivity;
@@ -71,7 +71,7 @@ import de.greenrobot.event.EventBus;
  *
  * Will also handle jumping to the comments section, liking a commend and liking a post directly
  */
-public class ReaderPostPagerActivity extends AppCompatActivity
+public class ReaderPostPagerActivity extends UploadStatusBarActivity
         implements ReaderInterfaces.AutoHideToolbarListener {
 
     /**

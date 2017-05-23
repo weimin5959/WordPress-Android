@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +24,7 @@ import org.wordpress.android.R;
 import org.wordpress.android.WordPress;
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.store.AccountStore;
+import org.wordpress.android.ui.UploadStatusBarActivity;
 import org.wordpress.android.ui.plans.adapters.PlansPagerAdapter;
 import org.wordpress.android.ui.plans.models.Plan;
 import org.wordpress.android.ui.reader.ReaderActivityLauncher;
@@ -44,7 +44,7 @@ import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 
-public class PlansActivity extends AppCompatActivity {
+public class PlansActivity extends UploadStatusBarActivity {
     private static final String ARG_LOCAL_AVAILABLE_PLANS = "ARG_LOCAL_AVAILABLE_PLANS";
 
     private SiteModel mSelectedSite;

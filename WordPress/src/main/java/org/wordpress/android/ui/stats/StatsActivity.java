@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -32,6 +31,7 @@ import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.store.AccountStore;
 import org.wordpress.android.fluxc.store.SiteStore;
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged;
+import org.wordpress.android.ui.UploadStatusBarActivity;
 import org.wordpress.android.ui.ActivityId;
 import org.wordpress.android.ui.RequestCodes;
 import org.wordpress.android.ui.accounts.SignInActivity;
@@ -59,7 +59,7 @@ import de.greenrobot.event.EventBus;
  * By pressing a spinner on the action bar, the user can select which timeframe they wish to see.
  * </p>
  */
-public class StatsActivity extends AppCompatActivity
+public class StatsActivity extends UploadStatusBarActivity
         implements NestedScrollViewExt.ScrollViewListener,
                 StatsVisitorsAndViewsFragment.OnDateChangeListener,
                 StatsVisitorsAndViewsFragment.OnOverviewItemChangeListener,

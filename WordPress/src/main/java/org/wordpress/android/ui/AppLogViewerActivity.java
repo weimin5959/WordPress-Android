@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,7 +29,7 @@ import static java.lang.String.format;
 /**
  * views the activity log (see utils/AppLog.java)
  */
-public class AppLogViewerActivity extends AppCompatActivity {
+public class AppLogViewerActivity extends UploadStatusBarActivity {
     private static final int ID_SHARE = 1;
     private static final int ID_COPY_TO_CLIPBOARD = 2;
 

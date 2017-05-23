@@ -18,7 +18,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -42,6 +41,7 @@ import org.wordpress.android.fluxc.model.MediaModel;
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.store.MediaStore;
 import org.wordpress.android.fluxc.tools.FluxCImageLoader;
+import org.wordpress.android.ui.UploadStatusBarActivity;
 import org.wordpress.android.util.ActivityUtils;
 import org.wordpress.android.util.AniUtils;
 import org.wordpress.android.util.AppLog;
@@ -60,7 +60,7 @@ import javax.inject.Inject;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 
-public class MediaPreviewActivity extends AppCompatActivity {
+public class MediaPreviewActivity extends UploadStatusBarActivity {
 
     private static final String ARG_MEDIA_CONTENT_URI = "content_uri";
     private static final String ARG_MEDIA_LOCAL_ID = "media_local_id";
