@@ -107,6 +107,8 @@ public class MediaUploadService extends Service {
     }
 
     private void handleOnMediaUploadedSuccess(@NonNull OnMediaUploaded event) {
+        EventBus.getDefault().post(new PostEvents.MediaUploadProgress(event.progress));
+
         if (event.canceled) {
             // Upload canceled
             AppLog.i(T.MEDIA, "Upload successfully canceled.");

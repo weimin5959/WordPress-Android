@@ -44,4 +44,12 @@ public class PostEvents {
             this.post = post;
         }
     }
+
+    public static class MediaUploadProgress {
+        public float progress;
+
+        public MediaUploadProgress(float progress) {
+            this.progress = progress;
+        }
+    }
 }
