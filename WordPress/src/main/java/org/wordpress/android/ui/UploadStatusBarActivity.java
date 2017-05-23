@@ -2,10 +2,12 @@ package org.wordpress.android.ui;
 
 import android.support.annotation.LayoutRes;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import org.wordpress.android.R;
+import org.wordpress.android.ui.media.services.MediaUploadService;
 import org.wordpress.android.ui.posts.services.PostEvents;
 import org.wordpress.android.widgets.WPTextView;
 
@@ -18,6 +20,16 @@ public class UploadStatusBarActivity extends AppCompatActivity {
         LinearLayout activityContainer = (LinearLayout) fullView.findViewById(R.id.activity_content);
         getLayoutInflater().inflate(layoutResID, activityContainer, true);
         super.setContentView(fullView);
+        if (!MediaUploadService.isUploadingMedia()) {
+            WPTextView bar = (WPTextView) findViewById(R.id.upload_bar);
+            bar.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        updateStatusBarVisibility();
+        super.onResume();
     }
 
     @Override
@@ -38,5 +50,14 @@ public class UploadStatusBarActivity extends AppCompatActivity {
     public void onEventMainThread(PostEvents.MediaUploadProgress event) {
         WPTextView bar = (WPTextView) findViewById(R.id.upload_bar);
         bar.setText("Uploading media! - " + event.progress);
+    }
+
+    private void updateStatusBarVisibility() {
+        WPTextView bar = (WPTextView) findViewById(R.id.upload_bar);
+        if (!MediaUploadService.isUploadingMedia()) {
+            bar.setVisibility(View.GONE);
+        } else {
+            bar.setVisibility(View.VISIBLE);
+        }
     }
 }

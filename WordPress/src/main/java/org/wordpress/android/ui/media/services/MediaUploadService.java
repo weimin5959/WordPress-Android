@@ -64,6 +64,10 @@ public class MediaUploadService extends Service {
         context.startService(intent);
     }
 
+    public static boolean isUploadingMedia() {
+        return !mPendingUploads.isEmpty() || !mInProgressUploads.isEmpty();
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
