@@ -94,7 +94,9 @@ public class PostPreviewActivity extends UploadStatusBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        EventBus.getDefault().register(this);
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
         mDispatcher.register(this);
 
         if (mPost == null || (mPost = mPostStore.getPostByLocalPostId(mPost.getId())) == null) {

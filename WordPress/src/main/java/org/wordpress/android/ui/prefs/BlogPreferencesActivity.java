@@ -77,7 +77,9 @@ public class BlogPreferencesActivity extends UploadStatusBarActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        EventBus.getDefault().register(this);
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
         mDispatcher.register(this);
     }
 

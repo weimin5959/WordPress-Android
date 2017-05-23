@@ -246,7 +246,9 @@ public class WPMainActivity extends UploadStatusBarActivity {
 
         // We need to register the dispatcher here otherwise it won't trigger if for example Site Picker is present
         mDispatcher.register(this);
-        EventBus.getDefault().register(this);
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
     }
 
     private void setTabLayoutElevation(float newElevation){

@@ -158,7 +158,9 @@ public class ReaderSubsActivity extends UploadStatusBarActivity
     @Override
     protected void onResume() {
         super.onResume();
-        EventBus.getDefault().register(this);
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
 
         // update list of tags and blogs from the server
         if (!mHasPerformedUpdate) {

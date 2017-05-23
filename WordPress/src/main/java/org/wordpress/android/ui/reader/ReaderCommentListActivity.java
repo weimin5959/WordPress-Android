@@ -212,7 +212,9 @@ public class ReaderCommentListActivity extends UploadStatusBarActivity {
     @Override
     public void onResume() {
         super.onResume();
-        EventBus.getDefault().register(this);
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
 
         if (mBackFromLogin) {
             if (NetworkUtils.isNetworkAvailable(this)) {

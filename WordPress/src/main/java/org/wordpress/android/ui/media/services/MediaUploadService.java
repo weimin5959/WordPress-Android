@@ -74,7 +74,9 @@ public class MediaUploadService extends Service {
         ((WordPress) getApplication()).component().inject(this);
         AppLog.i(T.MEDIA, "Media Upload Service > created");
         mDispatcher.register(this);
-        EventBus.getDefault().register(this);
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
         // TODO: recover any media that is in the MediaStore that has not yet been completely uploaded
         // or better yet, create an auxiliary table to host MediaUploadUnitInfo objects
     }

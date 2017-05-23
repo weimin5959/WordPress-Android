@@ -107,7 +107,9 @@ public class PostsListFragment extends Fragment
         super.onCreate(savedInstanceState);
         ((WordPress) getActivity().getApplication()).component().inject(this);
 
-        EventBus.getDefault().register(this);
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
         mDispatcher.register(this);
 
         updateSiteOrFinishActivity(savedInstanceState);
