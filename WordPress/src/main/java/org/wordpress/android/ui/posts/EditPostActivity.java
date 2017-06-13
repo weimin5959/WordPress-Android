@@ -120,6 +120,8 @@ import org.wordpress.android.util.SmartToast;
 import org.wordpress.android.util.StringUtils;
 import org.wordpress.android.util.ToastUtils;
 import org.wordpress.android.util.ToastUtils.Duration;
+import org.wordpress.android.util.VideoNotUtils;
+import org.wordpress.android.util.VideoUtils;
 import org.wordpress.android.util.WPHtml;
 import org.wordpress.android.util.WPMediaUtils;
 import org.wordpress.android.util.WPUrlUtils;
@@ -1776,6 +1778,11 @@ public class EditPostActivity extends AppCompatActivity implements EditorFragmen
         if (path == null) {
             ToastUtils.showToast(this, R.string.file_not_found, Duration.SHORT);
             return false;
+        }
+
+        if (isVideo) {
+            //VideoUtils.compressVideo(this, uri);
+            new VideoNotUtils(this, uri);
         }
 
         Uri optimizedMedia = WPMediaUtils.getOptimizedMedia(this, mSite, path, isVideo);
