@@ -40,7 +40,7 @@ public class VideoNotUtils {
     private static final File OUTPUT_FILENAME_DIR = Environment.getExternalStorageDirectory();
     // parameters for the video encoder
     private static final String OUTPUT_VIDEO_MIME_TYPE = "video/avc"; // H.264 Advanced Video Coding
-    private static final int OUTPUT_VIDEO_BIT_RATE = 3000000; // 3Mbps
+    private static final int OUTPUT_VIDEO_BIT_RATE = 3000000; // 0.3Mbps?
     private static final int OUTPUT_VIDEO_FRAME_RATE = 15; // 15fps
     private static final int OUTPUT_VIDEO_IFRAME_INTERVAL = 10; // 10 seconds between I-frames
     private static final int OUTPUT_VIDEO_COLOR_FORMAT =
@@ -104,7 +104,7 @@ public class VideoNotUtils {
                         AppLog.e(AppLog.T.MEDIA, "Grave error running extractDecodeEditEncodeMux", th);
                     }
 
-                    ProfilingUtils.split("640x460 done");
+                    ProfilingUtils.split("640x480 done");
 
                     setSize(1280, 720);
                     setCopyVideo();
