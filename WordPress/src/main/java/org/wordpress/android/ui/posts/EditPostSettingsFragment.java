@@ -628,11 +628,7 @@ public class EditPostSettingsFragment extends Fragment {
     }
 
     private void updateExcerpt(String excerpt) {
-        if (getPost().getExcerpt().equals(excerpt)) {
-            return;
-        }
-        getPost().setExcerpt(excerpt);
-        dispatchUpdatePostAction();
+        mPostModelManager.updateExcerpt(excerpt);
         if (isAdded()) {
             mExcerptTextView.setText(getPost().getExcerpt());
         }
