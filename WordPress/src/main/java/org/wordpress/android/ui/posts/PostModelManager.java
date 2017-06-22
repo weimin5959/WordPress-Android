@@ -1,6 +1,7 @@
 package org.wordpress.android.ui.posts;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import org.wordpress.android.WordPress;
 import org.wordpress.android.fluxc.Dispatcher;
@@ -10,6 +11,8 @@ import org.wordpress.android.fluxc.store.PostStore;
 import org.wordpress.android.util.DateTimeUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -37,11 +40,11 @@ public class PostModelManager {
         return mPost;
     }
 
-    void refreshPost() {
+    private void refreshPost() {
         mPost = mPostStore.getPostByLocalPostId(mLocalPostId);
     }
 
-    public void addListener(PostModelListener listener) {
+    void addListener(PostModelListener listener) {
         mListeners.add(listener);
     }
 
@@ -54,6 +57,49 @@ public class PostModelManager {
                 listener.updatedExcerpt(mPost.getExcerpt());
             }
         }
+    }
+
+    void updateSlug(String slug) {
+        mPost.setSlug(slug);
+        dispatchUpdatePostAction();
+    }
+
+    void updatePassword(String password) {
+        mPost.setPassword(password);
+        dispatchUpdatePostAction();
+    }
+
+    void updateCategories(List<Long> categoryList) {
+        if (categoryList == null) {
+            return;
+        }
+        mPost.setCategoryIdList(categoryList);
+        dispatchUpdatePostAction();
+    }
+
+    void updatePostStatus(String postStatus) {
+        mPost.setStatus(postStatus);
+        dispatchUpdatePostAction();
+    }
+
+    void updatePostFormat(String postFormat) {
+        mPost.setPostFormat(postFormat);
+        dispatchUpdatePostAction();
+    }
+
+    void updateTags(String selectedTags) {
+        if (!TextUtils.isEmpty(selectedTags)) {
+            String tags = selectedTags.replace("\n", " ");
+            mPost.setTagNameList(Arrays.asList(TextUtils.split(tags, ",")));
+        } else {
+            mPost.setTagNameList(null);
+        }
+        dispatchUpdatePostAction();
+    }
+
+    void updatePublishDate(Calendar calendar) {
+        mPost.setDateCreated(DateTimeUtils.iso8601FromDate(calendar.getTime()));
+        dispatchUpdatePostAction();
     }
 
     private void dispatchUpdatePostAction() {

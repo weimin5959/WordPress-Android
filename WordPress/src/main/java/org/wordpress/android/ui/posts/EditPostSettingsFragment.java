@@ -629,59 +629,32 @@ public class EditPostSettingsFragment extends Fragment implements PostModelListe
     }
 
     private void updateSlug(String slug) {
-        if (getPost().getSlug().equalsIgnoreCase(slug)) {
-            return;
-        }
-        getPost().setSlug(slug);
-        dispatchUpdatePostAction();
-        if (isAdded()) {
-            mSlugTextView.setText(getPost().getSlug());
-        }
+        mPostModelManager.updateSlug(slug);
+        mSlugTextView.setText(slug);
     }
 
     private void updatePassword(String password) {
-        if (getPost().getPassword().equals(password)) {
-            return;
-        }
-        getPost().setPassword(password);
-        dispatchUpdatePostAction();
-        if (isAdded()) {
-            mPasswordTextView.setText(getPost().getPassword());
-        }
+        mPostModelManager.updatePassword(password);
+        mPasswordTextView.setText(getPost().getPassword());
     }
 
     private void updateCategories(List<Long> categoryList) {
-        if (categoryList == null) {
-            return;
-        }
-        getPost().setCategoryIdList(categoryList);
-        dispatchUpdatePostAction();
+        mPostModelManager.updateCategories(categoryList);
         updateCategoriesTextView();
     }
 
     private void updatePostStatus(String postStatus) {
-        if (getPost().getStatus().equals(postStatus)) {
-            return;
-        }
-        getPost().setStatus(postStatus);
-        dispatchUpdatePostAction();
+        mPostModelManager.updatePostStatus(postStatus);
         updateStatusTextView();
         updateSaveButton();
     }
 
     private void updatePostFormat(String postFormat) {
-        if (getPost().getPostFormat().equals(postFormat)) {
-            return;
-        }
-        getPost().setPostFormat(postFormat);
-        dispatchUpdatePostAction();
+        mPostModelManager.updatePostFormat(postFormat);
         updatePostFormatTextView();
     }
 
     public void updateStatusTextView() {
-        if (!isAdded()) {
-            return;
-        }
         String[] statuses = getResources().getStringArray(R.array.post_settings_statuses);
         int index = getCurrentPostStatusIndex();
         // We should never get an OutOfBoundsException here, but if we do,
@@ -690,13 +663,7 @@ public class EditPostSettingsFragment extends Fragment implements PostModelListe
     }
 
     private void updateTags(String selectedTags) {
-        if (!TextUtils.isEmpty(selectedTags)) {
-            String tags = selectedTags.replace("\n", " ");
-            getPost().setTagNameList(Arrays.asList(TextUtils.split(tags, ",")));
-        } else {
-            getPost().setTagNameList(null);
-        }
-        dispatchUpdatePostAction();
+        mPostModelManager.updateTags(selectedTags);
         updateTagsTextView();
     }
 
@@ -710,15 +677,12 @@ public class EditPostSettingsFragment extends Fragment implements PostModelListe
     }
 
     private void updatePostFormatTextView() {
-        if (isAdded()) {
-            mPostFormatTextView.setText(getPostFormatNameFromKey(getPost().getPostFormat()));
-        }
+        mPostFormatTextView.setText(getPostFormatNameFromKey(getPost().getPostFormat()));
     }
 
     private void updatePublishDate(Calendar calendar) {
-        getPost().setDateCreated(DateTimeUtils.iso8601FromDate(calendar.getTime()));
+        mPostModelManager.updatePublishDate(calendar);
         updatePublishDateTextView();
-        dispatchUpdatePostAction();
         updateSaveButton();
     }
 
@@ -736,9 +700,6 @@ public class EditPostSettingsFragment extends Fragment implements PostModelListe
     }
 
     private void updateCategoriesTextView() {
-        if (!isAdded()) {
-            return;
-        }
         List<TermModel> categories = mTaxonomyStore.getCategoriesForPost(getPost(), mSite);
         StringBuilder sb = new StringBuilder();
         Iterator<TermModel> it = categories.iterator();
