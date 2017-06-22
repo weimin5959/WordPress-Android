@@ -18,7 +18,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 interface PostModelListener {
-    void updatedExcerpt(String excerpt);
     void updatedFeaturedImage();
 }
 
@@ -53,11 +52,6 @@ public class PostModelManager {
     void updateExcerpt(String excerpt) {
         mPost.setExcerpt(excerpt);
         dispatchUpdatePostAction();
-        for (PostModelListener listener : mListeners) {
-            if (listener != null) {
-                listener.updatedExcerpt(mPost.getExcerpt());
-            }
-        }
     }
 
     void updateSlug(String slug) {

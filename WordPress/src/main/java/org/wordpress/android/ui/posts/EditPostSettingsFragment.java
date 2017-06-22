@@ -450,7 +450,7 @@ public class EditPostSettingsFragment extends Fragment implements PostModelListe
                 new PostSettingsInputDialogFragment.PostSettingsInputDialogListener() {
                     @Override
                     public void onInputUpdated(String input) {
-                        mPostModelManager.updateExcerpt(input);
+                        updateExcerpt(input);
                     }
                 });
         dialog.show(getFragmentManager(), null);
@@ -626,6 +626,11 @@ public class EditPostSettingsFragment extends Fragment implements PostModelListe
         if (isAdded()) {
             getActivity().invalidateOptionsMenu();
         }
+    }
+
+    private void updateExcerpt(String excerpt) {
+        mPostModelManager.updateExcerpt(excerpt);
+        mExcerptTextView.setText(excerpt);
     }
 
     private void updateSlug(String slug) {
@@ -1030,11 +1035,6 @@ public class EditPostSettingsFragment extends Fragment implements PostModelListe
     }
 
     // PostModelListener Events
-
-    @Override
-    public void updatedExcerpt(String excerpt) {
-        mExcerptTextView.setText(excerpt);
-    }
 
     @Override
     public void updatedFeaturedImage() {
