@@ -19,6 +19,7 @@ import javax.inject.Inject;
 
 interface PostModelListener {
     void updatedExcerpt(String excerpt);
+    void updatedFeaturedImage();
 }
 
 public class PostModelManager {
@@ -100,6 +101,16 @@ public class PostModelManager {
     void updatePublishDate(Calendar calendar) {
         mPost.setDateCreated(DateTimeUtils.iso8601FromDate(calendar.getTime()));
         dispatchUpdatePostAction();
+    }
+
+    void updateFeaturedImage(long featuredImageId) {
+        mPost.setFeaturedImageId(featuredImageId);
+        dispatchUpdatePostAction();
+        for (PostModelListener listener : mListeners) {
+            if (listener != null) {
+                listener.updatedFeaturedImage();
+            }
+        }
     }
 
     private void dispatchUpdatePostAction() {

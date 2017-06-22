@@ -796,13 +796,7 @@ public class EditPostSettingsFragment extends Fragment implements PostModelListe
     // Featured Image Helpers
 
     public void updateFeaturedImage(long featuredImageId) {
-        if (getPost().getFeaturedImageId() == featuredImageId) {
-            return;
-        }
-
-        getPost().setFeaturedImageId(featuredImageId);
-        dispatchUpdatePostAction();
-        updateFeaturedImageView();
+        mPostModelManager.updateFeaturedImage(featuredImageId);
     }
 
     private void clearFeaturedImage() {
@@ -1040,5 +1034,10 @@ public class EditPostSettingsFragment extends Fragment implements PostModelListe
     @Override
     public void updatedExcerpt(String excerpt) {
         mExcerptTextView.setText(excerpt);
+    }
+
+    @Override
+    public void updatedFeaturedImage() {
+        updateFeaturedImageView();
     }
 }
