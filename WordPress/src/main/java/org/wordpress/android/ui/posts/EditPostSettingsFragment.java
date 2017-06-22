@@ -93,7 +93,7 @@ import static android.app.Activity.RESULT_OK;
 import static org.wordpress.android.ui.posts.EditPostActivity.EXTRA_POST_LOCAL_ID;
 import static org.wordpress.android.ui.posts.SelectCategoriesActivity.KEY_SELECTED_CATEGORY_IDS;
 
-public class EditPostSettingsFragment extends Fragment {
+public class EditPostSettingsFragment extends Fragment implements PostModelListener {
     private static final String POST_FORMAT_STANDARD_KEY = "standard";
 
     private static final int ACTIVITY_REQUEST_CODE_SELECT_CATEGORIES = 5;
@@ -187,6 +187,7 @@ public class EditPostSettingsFragment extends Fragment {
             ToastUtils.showToast(getActivity(), R.string.post_not_found, ToastUtils.Duration.SHORT);
             getActivity().finish();
         }
+        mPostModelManager.addListener(this);
     }
 
     private void fetchSiteSettingsAndUpdateDefaultPostFormat() {
@@ -449,7 +450,7 @@ public class EditPostSettingsFragment extends Fragment {
                 new PostSettingsInputDialogFragment.PostSettingsInputDialogListener() {
                     @Override
                     public void onInputUpdated(String input) {
-                        updateExcerpt(input);
+                        mPostModelManager.updateExcerpt(input);
                     }
                 });
         dialog.show(getFragmentManager(), null);
@@ -624,13 +625,6 @@ public class EditPostSettingsFragment extends Fragment {
     private void updateSaveButton() {
         if (isAdded()) {
             getActivity().invalidateOptionsMenu();
-        }
-    }
-
-    private void updateExcerpt(String excerpt) {
-        mPostModelManager.updateExcerpt(excerpt);
-        if (isAdded()) {
-            mExcerptTextView.setText(getPost().getExcerpt());
         }
     }
 
@@ -1078,5 +1072,12 @@ public class EditPostSettingsFragment extends Fragment {
 
     private PostModel getPost() {
         return mPostModelManager.getPost();
+    }
+
+    // PostModelListener Events
+
+    @Override
+    public void updatedExcerpt(String excerpt) {
+        mExcerptTextView.setText(excerpt);
     }
 }

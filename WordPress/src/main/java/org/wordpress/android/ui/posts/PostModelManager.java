@@ -9,11 +9,19 @@ import org.wordpress.android.fluxc.model.PostModel;
 import org.wordpress.android.fluxc.store.PostStore;
 import org.wordpress.android.util.DateTimeUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
+
+interface PostModelListener {
+    void updatedExcerpt(String excerpt);
+}
 
 public class PostModelManager {
     private int mLocalPostId;
     private PostModel mPost;
+    private List<PostModelListener> mListeners;
 
     @Inject Dispatcher mDispatcher;
     @Inject PostStore mPostStore;
@@ -22,6 +30,7 @@ public class PostModelManager {
         ((WordPress) context.getApplicationContext()).component().inject(this);
         mLocalPostId = localPostId;
         refreshPost();
+        mListeners = new ArrayList<>();
     }
 
     PostModel getPost() {
@@ -32,10 +41,19 @@ public class PostModelManager {
         mPost = mPostStore.getPostByLocalPostId(mLocalPostId);
     }
 
+    public void addListener(PostModelListener listener) {
+        mListeners.add(listener);
+    }
+
     // Update methods
     void updateExcerpt(String excerpt) {
         mPost.setExcerpt(excerpt);
         dispatchUpdatePostAction();
+        for (PostModelListener listener : mListeners) {
+            if (listener != null) {
+                listener.updatedExcerpt(mPost.getExcerpt());
+            }
+        }
     }
 
     private void dispatchUpdatePostAction() {
