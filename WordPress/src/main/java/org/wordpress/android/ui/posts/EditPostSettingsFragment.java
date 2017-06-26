@@ -855,9 +855,10 @@ public class EditPostSettingsFragment extends Fragment implements PostModelListe
             return Calendar.getInstance();
         }
         Calendar calendar = Calendar.getInstance();
+        String dateCreated = getPost().getDateCreated();
         // Set the currently selected time if available
-        if (!TextUtils.isEmpty(mPost.getDateCreated())) {
-            calendar.setTime(DateTimeUtils.dateFromIso8601(mPost.getDateCreated()));
+        if (!TextUtils.isEmpty(dateCreated)) {
+            calendar.setTime(DateTimeUtils.dateFromIso8601(dateCreated));
         }
         return calendar;
     }
